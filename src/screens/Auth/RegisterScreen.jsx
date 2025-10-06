@@ -1,6 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import {
   Alert,
   FlatList,
@@ -15,7 +15,8 @@ import {
   View
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { getVillagesListing } from '../../api/user_api';
+import { checkExitMember, getVillagesListing } from '../../api/user_api';
+import { FCMContext } from '../../services/FCMContext';
 import { COLORS } from '../../styles/colors';
 
 const RegisterScreen = ({ route }) => {
@@ -49,9 +50,12 @@ const RegisterScreen = ({ route }) => {
   const [villageOptions, setVillageOptions] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isCheckingMember, setIsCheckingMember] = useState(false);
   const totalSteps = 4;
   const navigation = useNavigation();
-
+  const { fcmToken } = useContext(FCMContext);
+  console.log(fcmToken)
+// const fcmToken ='sasasasas'
   const genderOptions = [
     { label: 'Male', value: 'male' },
     { label: 'Female', value: 'female' },
@@ -184,6 +188,47 @@ const RegisterScreen = ({ route }) => {
     return pincodeRegex.test(pincode);
   };
 
+  const checkMemberExists = async () => {
+    try {
+      setIsCheckingMember(true);
+
+      const requestData = {
+        email: formData.email?.value?.trim(),
+        mobile_number: parseInt(formData.mobile_number?.value?.trim())
+      };
+
+      const response = await checkExitMember(requestData);
+
+      if (response && response.exists === true) {
+
+        setErrors(prev => ({
+          ...prev,
+          memberExists: response.message || 'Member with this email or mobile number already exists'
+        }));
+        return false;
+      } else {
+
+        setErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors.memberExists;
+          return newErrors;
+        });
+        return true;
+      }
+    } catch (error) {
+      console.error('Error checking member existence:', error);
+
+      Alert.alert(
+        'Error',
+        'Failed to verify member details. Please check your internet connection and try again.',
+        [{ text: 'OK' }]
+      );
+      return false;
+    } finally {
+      setIsCheckingMember(false);
+    }
+  };
+
   const validateStep = (step) => {
     const newErrors = {};
 
@@ -194,7 +239,11 @@ const RegisterScreen = ({ route }) => {
         } else if (formData.firstname.value.trim().length < 2) {
           newErrors.firstname = 'First name must be at least 2 characters';
         }
-
+        if (!formData.middlename?.value?.trim()) {
+          newErrors.middlename = 'Middle name is required';
+        } else if (formData.middlename.value.trim().length < 2) {
+          newErrors.middlename = 'Middle name must be at least 2 characters';
+        }
         if (!formData.lastname?.value?.trim()) {
           newErrors.lastname = 'Last name is required';
         } else if (formData.lastname.value.trim().length < 2) {
@@ -272,8 +321,16 @@ const RegisterScreen = ({ route }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const nextStep = () => {
+  const nextStep = async () => {
     if (validateStep(currentStep)) {
+
+      if (currentStep === 2) {
+        const memberCheckPassed = await checkMemberExists();
+        if (!memberCheckPassed) {
+          return;
+        }
+      }
+
       if (currentStep < totalSteps) {
         setCurrentStep(currentStep + 1);
       }
@@ -305,16 +362,11 @@ const RegisterScreen = ({ route }) => {
 
   const handleSubmit = () => {
     if (validateStep(currentStep)) {
-      const deviceToken = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       const finalFormData = {
         ...formData,
-        device_token: { value: deviceToken, label: 'Device Token' }
-      };
-
-      console.log('DOB as string value:', finalFormData.dob.value);
-      console.log('DOB type:', typeof finalFormData.dob.value);
-      console.log('DOB Date object:', finalFormData.dob.dateObject);
+        device_token: { value: fcmToken, label: 'Device Token' }
+      }
 
       navigation.navigate('RegisterPayment', {
         registrationData: finalFormData
@@ -475,7 +527,7 @@ const RegisterScreen = ({ route }) => {
       </View>
 
       {renderInputField('First Name', 'firstname', 'Enter your first name', { required: true, autoCapitalize: 'words' })}
-      {renderInputField('Middle Name', 'middlename', 'Enter your middle name (optional)', { autoCapitalize: 'words' })}
+      {renderInputField('Middle Name', 'middlename', 'Enter your middle name', { autoCapitalize: 'words' })}
       {renderInputField('Last Name', 'lastname', 'Enter your last name', { required: true, autoCapitalize: 'words' })}
       {renderDatePickerField('Date of Birth', 'dob', 'Select your date of birth', true)}
       {renderSelectorField('Gender', 'gender', 'Select your gender', genderOptions, true)}
@@ -534,6 +586,13 @@ const RegisterScreen = ({ route }) => {
         keyboardType: 'phone-pad',
         maxLength: 10
       })}
+
+      {errors.memberExists && (
+        <View style={styles.memberExistsErrorContainer}>
+          <MaterialIcons name="error" size={20} color={COLORS.error || '#ff4444'} />
+          <Text style={styles.memberExistsErrorText}>{errors.memberExists}</Text>
+        </View>
+      )}
 
       {renderInputField('Address', 'address', 'Enter your complete address', {
         multiline: true,
@@ -627,11 +686,22 @@ const RegisterScreen = ({ route }) => {
 
             {currentStep < totalSteps ? (
               <TouchableOpacity
-                style={[styles.primaryButton, currentStep === 1 && styles.fullWidthButton]}
+                style={[
+                  styles.primaryButton,
+                  currentStep === 1 && styles.fullWidthButton,
+                  isCheckingMember && styles.disabledButton
+                ]}
                 onPress={nextStep}
                 activeOpacity={0.7}
+                disabled={isCheckingMember}
               >
-                <Text style={styles.primaryButtonText}>Next</Text>
+                {isCheckingMember && currentStep === 2 ? (
+                  <View style={styles.loadingContainer}>
+                    <Text style={styles.primaryButtonText}>Verifying...</Text>
+                  </View>
+                ) : (
+                  <Text style={styles.primaryButtonText}>Next</Text>
+                )}
               </TouchableOpacity>
             ) : (
               <TouchableOpacity
@@ -841,6 +911,24 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
+  memberExistsErrorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffebee',
+    borderColor: COLORS.error || '#ff4444',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 16,
+  },
+  memberExistsErrorText: {
+    color: COLORS.error || '#ff4444',
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 8,
+    flex: 1,
+  },
   buttonContainer: {
     padding: 20,
     backgroundColor: COLORS.white,
@@ -867,6 +955,15 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
     minHeight: 52,
+    justifyContent: 'center',
+  },
+  disabledButton: {
+    backgroundColor: COLORS.gray,
+    shadowOpacity: 0.1,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'center',
   },
   fullWidthButton: {
@@ -963,10 +1060,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: COLORS.darkGray,
     flex: 1,
-  },
-  selectedOptionText: {
-    fontWeight: '600',
-    color: COLORS.primary,
   },
 });
 

@@ -12,6 +12,17 @@ const NewsDetailScreen = ({ navigation, route }) => {
         navigation?.goBack();
     };
 
+    const stripHtmlTags = (str) => {
+        if (!str) return "";
+        return str.replace(/<\/?[^>]+(>|$)/g, "").trim();
+    };
+
+    const limitCharacters = (text, charLimit) => {
+        return text.length > charLimit
+            ? text.slice(0, charLimit).trim() + '...'
+            : text;
+    };
+
     const formatDate = (timestamp) => {
         if (!timestamp) return "Unknown date";
 
@@ -64,7 +75,7 @@ const NewsDetailScreen = ({ navigation, route }) => {
                     </View>
 
                     <Text style={styles.title}>{newsData.titleE}</Text>
-                    <Text style={styles.description}>{newsData.descriptionE}</Text>
+                    <Text style={styles.description}>{limitCharacters(stripHtmlTags(newsData.descriptionE))}{ }</Text>
                 </View>
             </ScrollView>
         </View>

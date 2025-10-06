@@ -1,3 +1,5 @@
+// import { IMAGE_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import {
     Animated,
@@ -7,27 +9,14 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    View,
-    Alert
+    View
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../styles/colors';
-
+const IMAGE_URL = 'http://192.168.1.13:3000/'
 const ProfileScreen = () => {
 
     const [scrollY] = useState(new Animated.Value(0));
-    const [user, setUser] = useState({
-        name: 'Ramesh Panchal',
-        email: 'ramesh.panchal@example.com',
-        role: 'Committee Member',
-        profileImage: 'https://i.pravatar.cc/300?img=13',
-        phone: '+91 98765 43210',
-        address: 'Ahmedabad, Gujarat',
-        joinedDate: 'January 2020',
-        memberId: 'PC001234',
-        bloodGroup: 'B+',
-        occupation: 'Business Owner'
-    });
+    const [user, setUser] = useState({});
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -38,48 +27,16 @@ const ProfileScreen = () => {
         try {
             setIsLoading(true);
 
-            // Try to get user data from AsyncStorage
             const userData = await AsyncStorage.getItem('userData');
-            const userInfo = await AsyncStorage.getItem('userInfo');
-
             if (userData) {
                 const parsedUserData = JSON.parse(userData);
-                console.log('Loaded user data:', parsedUserData);
-
-                // If the response has a user object, use it
-                if (parsedUserData.user) {
-                    setUser(prevUser => ({
-                        ...prevUser,
-                        ...parsedUserData.user
-                    }));
-                } else if (parsedUserData.data && parsedUserData.data.user) {
-                    // Sometimes the user data might be nested in a data object
-                    setUser(prevUser => ({
-                        ...prevUser,
-                        ...parsedUserData.data.user
-                    }));
-                } else {
-                    // If the entire response is user data
-                    setUser(prevUser => ({
-                        ...prevUser,
-                        ...parsedUserData
-                    }));
-                }
-            } else if (userInfo) {
-                // Fallback to userInfo if userData is not available
-                const parsedUserInfo = JSON.parse(userInfo);
-                console.log('Loaded user info:', parsedUserInfo);
-                setUser(prevUser => ({
-                    ...prevUser,
-                    ...parsedUserInfo
-                }));
-            } else {
+                setUser(parsedUserData.member)
+            }
+            else {
                 console.log('No user data found in storage, using default values');
             }
-
         } catch (error) {
             console.error('Error loading user data:', error);
-            Alert.alert('Error', 'Failed to load user data from storage');
         } finally {
             setIsLoading(false);
         }
@@ -104,13 +61,22 @@ const ProfileScreen = () => {
             </View>
         );
     }
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (isNaN(date)) return dateString;
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    };
 
     return (
         <View style={styles.container}>
-
             <Animated.View style={[styles.animatedHeader, { opacity: headerOpacity }]}>
                 <View style={styles.headerContent}>
-                    <Text style={styles.headerTitle}>{user.name}</Text>
+                    <Text style={styles.headerTitle}>{user.firstname}</Text>
                 </View>
             </Animated.View>
 
@@ -124,7 +90,7 @@ const ProfileScreen = () => {
                 scrollEventThrottle={16}
             >
                 <ImageBackground
-                    source={{ uri: 'https://images.unsplash.com/photo-1503264116251-35a269479413?auto=format&fit=crop&w=800&q=80' }}
+                    source={{ uri: `${IMAGE_URL}${user.profile_banner}` }}
                     style={styles.headerBackground}
                 />
 
@@ -136,15 +102,15 @@ const ProfileScreen = () => {
                         ]}
                     >
                         <Image
-                            source={{ uri: user.profileImage }}
+                            source={{ uri: `${IMAGE_URL}${user.photo}` }}
                             style={styles.profileImage}
                             defaultSource={{ uri: 'https://i.pravatar.cc/300?img=13' }}
                         />
                     </Animated.View>
 
                     <View style={styles.profileInfo}>
-                        <Text style={styles.profileName}>{user.name}</Text>
-                        <Text style={styles.profileRole}>{user.role}</Text>
+                        <Text style={styles.profileName}>{user.firstname}</Text>
+                        <Text style={styles.profileRole}>{user.job}</Text>
                         <Text style={styles.profileLocation}>{user.address}</Text>
                     </View>
                 </View>
@@ -159,7 +125,7 @@ const ProfileScreen = () => {
 
                     <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>Phone</Text>
-                        <Text style={styles.infoValue}>{user.phone}</Text>
+                        <Text style={styles.infoValue}>{user.mobile_number}</Text>
                     </View>
 
                     <View style={styles.infoItem}>
@@ -169,7 +135,7 @@ const ProfileScreen = () => {
 
                     <View style={[styles.infoItem, styles.lastItem]}>
                         <Text style={styles.infoLabel}>Occupation</Text>
-                        <Text style={styles.infoValue}>{user.occupation}</Text>
+                        <Text style={styles.infoValue}>{user.job}</Text>
                     </View>
                 </View>
 
@@ -178,22 +144,47 @@ const ProfileScreen = () => {
 
                     <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>Member ID</Text>
-                        <Text style={styles.infoValue}>{user.memberId}</Text>
-                    </View>
-
-                    <View style={styles.infoItem}>
-                        <Text style={styles.infoLabel}>Role</Text>
-                        <Text style={styles.infoValue}>{user.role}</Text>
+                        <Text style={styles.infoValue}>{user.personal_id}</Text>
                     </View>
 
                     <View style={styles.infoItem}>
                         <Text style={styles.infoLabel}>Member Since</Text>
-                        <Text style={styles.infoValue}>{user.joinedDate}</Text>
+                        <Text style={styles.infoValue}>{formatDate(user.created_at)}</Text>
                     </View>
 
-                    <View style={[styles.infoItem, styles.lastItem]}>
-                        <Text style={styles.infoLabel}>Blood Group</Text>
-                        <Text style={styles.infoValue}>{user.bloodGroup}</Text>
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>Full Name</Text>
+                        <Text style={styles.infoValue}>
+                            {`${user.firstname || ''} ${user.middlename || ''} ${user.lastname || ''}`.trim()}
+                        </Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>Gender</Text>
+                        <Text style={styles.infoValue}>{user.gender}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>Date of Birth</Text>
+                        <Text style={styles.infoValue}>{formatDate(user.dob)}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>Marital Status</Text>
+                        <Text style={styles.infoValue}>{user.marital_status}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>Education</Text>
+                        <Text style={styles.infoValue}>{user.education}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>City</Text>
+                        <Text style={styles.infoValue}>{user.city}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>State</Text>
+                        <Text style={styles.infoValue}>{user.state}</Text>
+                    </View>
+                    <View style={styles.infoItem}>
+                        <Text style={styles.infoLabel}>Pincode</Text>
+                        <Text style={styles.infoValue}>{user.pincode}</Text>
                     </View>
                 </View>
 

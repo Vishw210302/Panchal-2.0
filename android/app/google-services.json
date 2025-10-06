@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "657388382887",
+    "project_id": "panchal-samaj-app",
+    "storage_bucket": "panchal-samaj-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:657388382887:android:ac47ff1547118cf0ce4982",
+        "android_client_info": {
+          "package_name": "com.panchalsamajapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6L4-twOR9OGRG7YYiQ6NhihBuOFuRHUw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

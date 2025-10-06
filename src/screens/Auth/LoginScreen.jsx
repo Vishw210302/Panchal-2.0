@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useState } from 'react';
 import {
@@ -13,7 +14,6 @@ import {
   View
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginMember } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 
@@ -91,14 +91,56 @@ const LoginScreen = () => {
         }
       } else {
         const errorMessage = response?.message || 'Login failed. Please check your credentials.';
-        setPasswordError(errorMessage);
+
+        if (response?.message?.toLowerCase().includes('not found') ||
+          response?.message?.toLowerCase().includes('email')) {
+          setEmailError(errorMessage);
+        } else if (response?.message?.toLowerCase().includes('password')) {
+          setPasswordError(errorMessage);
+        } else {
+          setPasswordError(errorMessage);
+        }
+
         Alert.alert('Login Failed', errorMessage);
       }
     } catch (error) {
-      console.error('Login error:', error);
-      const errorMessage = 'Network error. Please check your connection and try again.';
-      setPasswordError(errorMessage);
-      Alert.alert('Error', errorMessage);
+
+      if (error.response) {
+
+        const status = error.response.status;
+        const responseData = error.response.data;
+
+        if (status === 401) {
+          const errorMessage = responseData?.message || 'Invalid email or password';
+
+          if (responseData?.message?.toLowerCase().includes('not found') ||
+            responseData?.message?.toLowerCase().includes('email')) {
+            setEmailError(errorMessage);
+          } else if (responseData?.message?.toLowerCase().includes('password')) {
+            setPasswordError(errorMessage);
+          } else {
+            setPasswordError(errorMessage);
+          }
+
+        } else if (status === 500) {
+          const errorMessage = 'Server error. Please try again later.';
+          setPasswordError(errorMessage);
+          Alert.alert('Server Error', errorMessage);
+        } else {
+          const errorMessage = responseData?.message || `Error: ${status}. Please try again.`;
+          setPasswordError(errorMessage);
+          Alert.alert('Error', errorMessage);
+        }
+      } else if (error.request) {
+
+        const errorMessage = 'Network error. Please check your connection and try again.';
+        setPasswordError(errorMessage);
+        Alert.alert('Network Error', errorMessage);
+      } else {
+        const errorMessage = 'An unexpected error occurred. Please try again.';
+        setPasswordError(errorMessage);
+        Alert.alert('Error', errorMessage);
+      }
     } finally {
       setIsLoading(false);
     }

@@ -28,6 +28,11 @@ const RecentNewsListing = () => {
         fetchNews();
     }, []);
 
+    const stripHtmlTags = (str) => {
+        if (!str) return "";
+        return str.replace(/<\/?[^>]+(>|$)/g, "").trim();
+    };
+
     const limitCharacters = (text, charLimit) => {
         return text.length > charLimit
             ? text.slice(0, charLimit).trim() + '...'
@@ -60,10 +65,10 @@ const RecentNewsListing = () => {
                         <Image source={{ uri: `http://192.168.1.13:3000/${news.image}` }} style={styles.image} />
                         <View style={styles.textContainer}>
                             <Text style={styles.title}>
-                                {limitCharacters(news.titleE, 25)}
+                                {limitCharacters(stripHtmlTags(news.titleE), 25)}
                             </Text>
                             <Text style={styles.description}>
-                                {limitCharacters(news.descriptionE, 60)}
+                                {limitCharacters(stripHtmlTags(news.descriptionE), 60)}
                             </Text>
                         </View>
                     </View>

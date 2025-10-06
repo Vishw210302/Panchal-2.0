@@ -12,3 +12,7 @@ export const postOrderCreate = (payload) => axiosClient.post('/create-order', pa
 export const registerUser = (payload) => axiosClient.post('/createMember', payload);
 export const verifyPayment = (payload) => axiosClient.post('/verify-payment', payload);
 export const loginMember = (payload) => axiosClient.post('/loginMember', payload);
+export const checkExitMember = (payload) => axiosClient.post('/checkExitMember', payload);
+export const resetPassword = (payload) => axiosClient.post('/reset-password', payload);
+export const verifyOtp = (payload) => axiosClient.post('/verifyOtp', payload);
+export const changePassword = (payload) => axiosClient.post('/change-password', payload);

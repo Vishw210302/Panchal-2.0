@@ -22,6 +22,17 @@ const NewsScreen = () => {
             : text;
     };
 
+    const stripHtmlTags = (str) => {
+        if (!str) return "";
+        return str.replace(/<\/?[^>]+(>|$)/g, "").trim();
+    };
+
+    const limitCharacters = (text, charLimit) => {
+        return text.length > charLimit
+            ? text.slice(0, charLimit).trim() + '...'
+            : text;
+    };
+
     const handleClick = (newsId) => {
         const selectedNews = newsDataListing.find(news => news._id === newsId);
 
@@ -75,7 +86,7 @@ const NewsScreen = () => {
                                     {limitWords(news.titleE, 25)}
                                 </Text>
                                 <Text style={styles.description}>
-                                    {limitWords(news.descriptionE, 55)}
+                                    {limitCharacters(stripHtmlTags(news.descriptionE),55)}
                                 </Text>
                             </View>
                         </TouchableOpacity>
