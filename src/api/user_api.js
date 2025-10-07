@@ -16,3 +16,6 @@ export const checkExitMember = (payload) => axiosClient.post('/checkExitMember',
 export const resetPassword = (payload) => axiosClient.post('/reset-password', payload);
 export const verifyOtp = (payload) => axiosClient.post('/verifyOtp', payload);
 export const changePassword = (payload) => axiosClient.post('/change-password', payload);
+export const getPerents = (id) => axiosClient.get(`/parents/${id}`);
+export const createFamilyMember = (payload) => axiosClient.post('/createFamilyMember', payload);
+export const familyList = (id) => axiosClient.get(`/familyList/${id}`);

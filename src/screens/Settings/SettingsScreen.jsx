@@ -14,6 +14,8 @@ import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 
 const SettingsScreen = () => {
@@ -34,6 +36,10 @@ const SettingsScreen = () => {
 
     const handleLanguagePress = () => {
         Alert.alert('Language', 'Available: English, Gujarati, Hindi');
+    };
+    const handleViewFamilyPress = () => {
+         navigation.navigate('ViewFamilyList');
+        // Alert.alert('Language', 'Available: English, Gujarati, Hindi');
     };
 
     const handlePrivacyPress = () => {
@@ -65,9 +71,16 @@ const SettingsScreen = () => {
             'Are you sure you want to logout?',
             [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Logout', style: 'destructive', onPress: () => console.log('Logged out') },
+                { text: 'Logout', style: 'destructive', onPress: () => {
+                    AsyncStorage.removeItem('userData')
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'Login' }],
+                    });
+                } },
             ]
         );
+
     };
 
     const SettingsSection = ({ title, children }) => (
@@ -148,6 +161,12 @@ const SettingsScreen = () => {
                     title="Edit Profile"
                     subtitle="Update your personal information"
                     onPress={handleProfilePress}
+                />
+                <SettingsItem
+                    icon="shield-checkmark-outline"
+                    title="View Family Member"
+                    subtitle="Connect with family"
+                    onPress={handleViewFamilyPress}
                 />
                 <SettingsItem
                     icon="shield-checkmark-outline"

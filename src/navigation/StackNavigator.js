@@ -18,6 +18,8 @@ import HelpAndSupportScreen from '../screens/Settings/HelpAndSupportScreen';
 import SettingsScreen from '../screens/Settings/SettingsScreen';
 import BottomTabNavigator from './BottomTabNavigator';
 import UserDetailsScreen from '../screens/Directory/UserDetailsScreen';
+import ViewFamilyList from '../screens/Settings/ViewFamilyList';
+import AddFamilyMember from '../screens/Settings/AddFamilyMember';
 
 const Stack = createNativeStackNavigator();
 
@@ -114,6 +116,16 @@ const StackNavigator = () => {
                 name="FailPayment"
                 component={FailPaymentScreen}
                 options={{ headerShown: false, title: 'FailPayment' }}
+            />
+            <Stack.Screen
+                name="ViewFamilyList"
+                component={ViewFamilyList}
+                options={{ headerShown: false, title: 'ViewFamilyList' }}
+            />
+            <Stack.Screen
+                name="AddFamilyMember"
+                component={AddFamilyMember}
+                options={{ headerShown: false, title: 'AddFamilyMember' }}
             />
         </Stack.Navigator>
     );

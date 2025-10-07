@@ -18,7 +18,7 @@ const ProfileScreen = () => {
     const [scrollY] = useState(new Animated.Value(0));
     const [user, setUser] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-
+console.log(user,"user...........")
     useEffect(() => {
         loadUserData();
     }, []);
