@@ -12,7 +12,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getBusinesListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
-
+import ENV from '../../config/env';
 const BusinessScreen = ({ navigation }) => {
 
     const [businessListing, setBusinessListing] = useState([]);
@@ -65,7 +65,7 @@ const BusinessScreen = ({ navigation }) => {
             if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
                 return { uri: imageUrl };
             }
-            return { uri: `http://192.168.1.13:3000/${imageUrl}` };
+            return { uri: `${ENV.IMAGE_URL}/${imageUrl}` };
         }
         return null;
     }, []);

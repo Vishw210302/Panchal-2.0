@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
-
+import ENV from '../../config/env';
 const UserDetailsScreen = ({ route, navigation }) => {
 
     const { member: userData } = route.params || {};
@@ -27,13 +27,13 @@ const UserDetailsScreen = ({ route, navigation }) => {
 
     const getImageUrl = () => {
         if (userData?.photo && userData.photo !== '') {
-            return "http://192.168.1.13:3000/" + userData.photo;
+            return ENV.IMAGE_URL + userData.photo;
         }
     };
 
     const getBannerImageUrl = () => {
         if (userData?.profile_banner && userData.profile_banner !== '') {
-            return "http://192.168.1.13:3000/" + userData.profile_banner;
+            return ENV.IMAGE_URL + userData.profile_banner;
         }
     };
 

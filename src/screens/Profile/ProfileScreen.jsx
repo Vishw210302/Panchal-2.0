@@ -1,4 +1,3 @@
-// import { IMAGE_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import {
@@ -12,13 +11,12 @@ import {
     View
 } from 'react-native';
 import { COLORS } from '../../styles/colors';
-const IMAGE_URL = 'http://192.168.1.13:3000/'
+import ENV from '../../config/env';
 const ProfileScreen = () => {
 
     const [scrollY] = useState(new Animated.Value(0));
     const [user, setUser] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-console.log(user,"user...........")
     useEffect(() => {
         loadUserData();
     }, []);
@@ -90,7 +88,7 @@ console.log(user,"user...........")
                 scrollEventThrottle={16}
             >
                 <ImageBackground
-                    source={{ uri: `${IMAGE_URL}${user.profile_banner}` }}
+                    source={{ uri: `${ENV.IMAGE_URL}${user.profile_banner}` }}
                     style={styles.headerBackground}
                 />
 
@@ -102,7 +100,7 @@ console.log(user,"user...........")
                         ]}
                     >
                         <Image
-                            source={{ uri: `${IMAGE_URL}${user.photo}` }}
+                            source={{ uri: `${ENV.IMAGE_URL}${user.photo}` }}
                             style={styles.profileImage}
                             defaultSource={{ uri: 'https://i.pravatar.cc/300?img=13' }}
                         />

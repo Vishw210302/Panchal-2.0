@@ -7,6 +7,7 @@ import {
     View
 } from 'react-native';
 import { getSlider } from '../../api/user_api';
+import ENV from '../../config/env';
 
 const HomeSliderCard = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -67,7 +68,7 @@ const HomeSliderCard = () => {
     const renderSlideItem = ({ item }) => (
         <View style={[styles.slideContainer, { width: screenData.width }]}>
             <Image
-                source={{ uri: "http://192.168.1.13:3000/" + item.image }}
+                source={{ uri: ENV.IMAGE_URL + item.image }}
                 style={styles.slideImage}
                 resizeMode="cover"
             />

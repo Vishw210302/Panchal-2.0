@@ -15,6 +15,7 @@ import { getAboutUsDataListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import OurCodeValuesAboutUs from './OurCodeValuesAboutUs';
 import WhatWeDoAboutUs from './WhatWeDoAboutUs';
+import ENV from '../../config/env';
 
 const { width, height } = Dimensions.get('window');
 
@@ -114,7 +115,7 @@ const AboutUsScreen = ({ navigation }) => {
                     {displayData.image && (
                         <Image
                             source={{
-                                uri: "http://192.168.1.13:3000/" + displayData.image
+                                uri: ENV.IMAGE_URL + displayData.image
                             }}
                             style={styles.bannerImage}
                             resizeMode="cover"

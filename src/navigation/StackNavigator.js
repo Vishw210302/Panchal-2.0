@@ -20,6 +20,8 @@ import BottomTabNavigator from './BottomTabNavigator';
 import UserDetailsScreen from '../screens/Directory/UserDetailsScreen';
 import ViewFamilyList from '../screens/Settings/ViewFamilyList';
 import AddFamilyMember from '../screens/Settings/AddFamilyMember';
+import OwnBussiness from '../screens/Settings/OwnBussiness';
+import BussinesRequest from '../screens/Settings/BussinesRequest';
 
 const Stack = createNativeStackNavigator();
 
@@ -126,6 +128,16 @@ const StackNavigator = () => {
                 name="AddFamilyMember"
                 component={AddFamilyMember}
                 options={{ headerShown: false, title: 'AddFamilyMember' }}
+            />
+            <Stack.Screen
+                name="OwnBussiness"
+                component={OwnBussiness}
+                options={{ headerShown: false, title: 'OwnBussiness' }}
+            />
+            <Stack.Screen
+                name="BussinesRequest"
+                component={BussinesRequest}
+                options={{ headerShown: false, title: 'BussinesRequest' }}
             />
         </Stack.Navigator>
     );

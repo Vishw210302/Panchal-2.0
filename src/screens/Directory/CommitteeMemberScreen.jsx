@@ -13,6 +13,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getCommunitiesMemberListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
+import ENV from '../../config/env';
 
 const CommitteeMemberScreen = ({ navigation }) => {
 
@@ -77,7 +78,7 @@ const CommitteeMemberScreen = ({ navigation }) => {
                             <Image
                                 source={
                                     member.image && member.image.trim() !== ""
-                                        ? { uri: "http://192.168.1.13:3000/" + member.image }
+                                        ? { uri: ENV.IMAGE_URL + member.image }
                                         : { uri: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
                                 }
                                 style={styles.memberImage}

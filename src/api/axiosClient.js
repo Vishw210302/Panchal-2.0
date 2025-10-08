@@ -1,6 +1,6 @@
 import axios from 'axios';
-
-const BASE_URL = process.env.API_BASE_URL || `http://192.168.1.13:3000/api/`;
+import ENV from '../config/env';
+const BASE_URL = ENV.API_BASE_URL;
 
 const axiosClient = axios.create({
     baseURL: BASE_URL,

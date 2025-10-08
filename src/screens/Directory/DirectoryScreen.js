@@ -11,6 +11,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getMembersListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
+import ENV from '../../config/env';
 
 const DirectoryScreen = ({ navigation }) => {
 
@@ -39,7 +40,7 @@ const DirectoryScreen = ({ navigation }) => {
 
     const getImageUrl = (member) => {
         if (member.photo && member.photo !== '') {
-            return "http://192.168.1.13:3000/" + member.photo;
+            return ENV.IMAGE_URL + member.photo;
         }
     };
 

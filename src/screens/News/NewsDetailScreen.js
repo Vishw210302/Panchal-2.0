@@ -1,6 +1,7 @@
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
+import ENV from '../../config/env';
 
 const NewsDetailScreen = ({ navigation, route }) => {
 
@@ -58,7 +59,7 @@ const NewsDetailScreen = ({ navigation, route }) => {
             <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 <View style={styles.imageContainer}>
                     <Image
-                        source={{ uri: "http://192.168.1.13:3000/" + newsData.image }}
+                        source={{ uri: ENV.IMAGE_URL + newsData.image }}
                         style={styles.mainImage}
                         resizeMode="cover"
                     />

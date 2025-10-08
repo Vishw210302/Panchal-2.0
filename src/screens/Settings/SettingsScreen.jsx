@@ -43,7 +43,8 @@ const SettingsScreen = () => {
     };
 
     const handlePrivacyPress = () => {
-        Alert.alert('Privacy Policy', 'View privacy policy and data handling');
+        //  navigation.navigate('BussinesRequest');
+         navigation.navigate('OwnBussiness');
     };
 
     const handleTermsPress = () => {
@@ -170,7 +171,7 @@ const SettingsScreen = () => {
                 />
                 <SettingsItem
                     icon="shield-checkmark-outline"
-                    title="Privacy & Security"
+                    title="Own Bussiness"
                     subtitle="Manage your account security"
                     onPress={handlePrivacyPress}
                 />

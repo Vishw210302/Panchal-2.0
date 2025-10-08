@@ -9,6 +9,7 @@ import {
     View
 } from 'react-native';
 import { getNewsListing } from '../../api/user_api';
+import ENV from '../../config/env';
 
 const NewsScreen = () => {
 
@@ -80,7 +81,7 @@ const NewsScreen = () => {
                             onPress={() => {
                                 handleClick(news._id);
                             }}>
-                            <Image source={{ uri: "http://192.168.1.13:3000/" + news.image }} style={styles.image} />
+                            <Image source={{ uri: ENV.IMAGE_URL + news.image }} style={styles.image} />
                             <View style={styles.textContainer}>
                                 <Text style={styles.title}>
                                     {limitWords(news.titleE, 25)}

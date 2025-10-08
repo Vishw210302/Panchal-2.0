@@ -8,6 +8,7 @@ import {
     View
 } from 'react-native';
 import { getVillagesListing } from '../../api/user_api';
+import ENV from '../../config/env';
 
 const VillagePageListing = () => {
 
@@ -32,8 +33,7 @@ const VillagePageListing = () => {
     }, [])
 
     const getImageUrl = (imageName) => {
-        const baseUrl = 'http://192.168.1.13:3000/';
-        return `${baseUrl}${imageName}`;
+        return `${ENV.IMAGE_URL}${imageName}`;
     };
 
     const renderGridItem = ({ item }) => (
