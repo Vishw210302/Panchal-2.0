@@ -26,7 +26,7 @@ const SuccessPaymentScreen = ({ navigation, route }) => {
     const { registrationData } = route?.params || {};
 
     const defaultPaymentData = {
-        amount: '$129.99',
+        amount: '100',
         transactionId: 'TXN123456789',
         paymentMethod: 'Credit Card ****1234',
         date: new Date().toLocaleDateString(),

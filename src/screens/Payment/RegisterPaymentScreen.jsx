@@ -164,6 +164,7 @@ const RegisterPaymentScreen = ({ route }) => {
                 order_id: paymentData.razorpay_order_id,
                 signature: paymentData.razorpay_signature,
                 registration_data: finalRegistrationData,
+                forReason: 'registration',
             };
 
             const verificationResponse = await verifyPayment(payload);

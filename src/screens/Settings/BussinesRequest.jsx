@@ -22,6 +22,7 @@ import { COLORS } from '../../styles/colors';
 
 const BussinesRequest = ({ navigation }) => {
     const [memberId, setMemberId] = useState('');
+    const [user, setUser] = useState({});
     const [businessName, setBusinessName] = useState('');
     const [description, setDescription] = useState('');
     const [category, setCategory] = useState('');
@@ -35,7 +36,6 @@ const BussinesRequest = ({ navigation }) => {
     const [isLoadingSubscriptions, setIsLoadingSubscriptions] = useState(true);
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
-
     useEffect(() => {
         initializeData();
         Animated.timing(fadeAnim, {
@@ -50,6 +50,7 @@ const BussinesRequest = ({ navigation }) => {
             // Get user data
             const userData = await AsyncStorage.getItem('userData');
             const parsedData = JSON.parse(userData);
+            setUser(parsedData);
             const userId = parsedData.member._id;
             setMemberId(userId);
 
@@ -149,8 +150,14 @@ const BussinesRequest = ({ navigation }) => {
                 order_id: paymentData.razorpay_order_id,
                 payment_id: paymentData.razorpay_payment_id,
                 signature: paymentData.razorpay_signature,
+                registration_data: {
+                    first_name: user.member.firstname, 
+                    last_name: user.member.lastname, 
+                    email: user.member.email
+                },
+                forReason: 'subscription',
             };
-
+            console.log(verificationPayload)
             await verifyPayment(verificationPayload);
 
             // Create business listing
