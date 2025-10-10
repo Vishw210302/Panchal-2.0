@@ -3,9 +3,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import AppNavigator from './src/navigation/AppNavigator';
 import messaging from '@react-native-firebase/messaging';
 import { requestUserPermission } from './src/services/notificationHandle';
-import { FCMProvider } from './src/services/FCMContext'; // adjust path
+import { FCMProvider } from './src/services/FCMContext'; 
+import SplashScreen from 'react-native-splash-screen';
 
 const App = () => {
+  useEffect(() => {
+    SplashScreen.hide(); 
+  }, []);
+
   useEffect(() => {
     requestUserPermission();
 
@@ -27,6 +32,7 @@ const App = () => {
 
     return unsubscribe;
   }, []);
+
 
   return (
     <FCMProvider>

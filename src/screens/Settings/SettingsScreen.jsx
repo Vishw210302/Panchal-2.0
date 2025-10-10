@@ -48,7 +48,10 @@ const SettingsScreen = () => {
     };
 
     const handleTermsPress = () => {
-        Alert.alert('Terms & Conditions', 'View terms of service');
+        
+         navigation.navigate('Onboarding');
+
+        // Alert.alert('Terms & Conditions', 'View terms of service');
     };
 
     const handleShareApp = async () => {

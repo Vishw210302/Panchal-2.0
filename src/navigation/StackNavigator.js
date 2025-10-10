@@ -22,6 +22,7 @@ import ViewFamilyList from '../screens/Settings/ViewFamilyList';
 import AddFamilyMember from '../screens/Settings/AddFamilyMember';
 import OwnBussiness from '../screens/Settings/OwnBussiness';
 import BussinesRequest from '../screens/Settings/BussinesRequest';
+import Onboarding from '../screens/Onboarding/Onboarding';
 
 const Stack = createNativeStackNavigator();
 
@@ -138,6 +139,11 @@ const StackNavigator = () => {
                 name="BussinesRequest"
                 component={BussinesRequest}
                 options={{ headerShown: false, title: 'BussinesRequest' }}
+            />
+            <Stack.Screen
+                name="Onboarding"
+                component={Onboarding}
+                options={{ headerShown: false, title: 'Onboarding' }}
             />
         </Stack.Navigator>
     );
