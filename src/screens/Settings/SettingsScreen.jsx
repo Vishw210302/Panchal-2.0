@@ -153,7 +153,7 @@ const SettingsScreen = () => {
                     onPress={handleBack}>
                     <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
                 </TouchableOpacity>
-                <Text style={styles.headerTitle}>Settings</Text>
+                <Text style={styles.headerTitle}>Settingsss</Text>
             </View>
 
             <SettingsSection title="Account">

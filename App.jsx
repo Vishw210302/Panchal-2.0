@@ -4,6 +4,7 @@ import AppNavigator from './src/navigation/AppNavigator';
 import messaging from '@react-native-firebase/messaging';
 import { requestUserPermission } from './src/services/notificationHandle';
 import { FCMProvider } from './src/services/FCMContext'; // adjust path
+import { UserProvider } from './src/context/UserContext';
 
 const App = () => {
   useEffect(() => {
@@ -30,9 +31,11 @@ const App = () => {
 
   return (
     <FCMProvider>
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
+      <NavigationContainer>
+        <UserProvider>
+          <AppNavigator />
+        </UserProvider>
+      </NavigationContainer>
     </FCMProvider>
   );
 };

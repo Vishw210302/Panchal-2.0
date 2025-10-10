@@ -10,13 +10,11 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
 import ENV from '../../config/env';
+import HeaderBack from '../../components/common/HeaderBack';
+
 const UserDetailsScreen = ({ route, navigation }) => {
 
     const { member: userData } = route.params || {};
-
-    const handleBack = () => {
-        navigation?.goBack();
-    };
 
     const getFullName = () => {
         const firstName = userData?.firstname || '';
@@ -95,12 +93,7 @@ const UserDetailsScreen = ({ route, navigation }) => {
     if (!userData) {
         return (
             <View style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                        <MaterialIcons name="arrow-back-ios" color={COLORS.darkGray} size={24} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Member Details</Text>
-                </View>
+                <HeaderBack title="Member Details" navigation={navigation} />
                 <View style={styles.errorContainer}>
                     <MaterialIcons name="error-outline" size={60} color={COLORS.gray} />
                     <Text style={styles.errorText}>No user data available</Text>
@@ -111,12 +104,7 @@ const UserDetailsScreen = ({ route, navigation }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                    <MaterialIcons name="arrow-back-ios" color={COLORS.white} size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Member Details</Text>
-            </View>
+            <HeaderBack title="Member Details" navigation={navigation} />
 
             <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 <View style={styles.profileSection}>

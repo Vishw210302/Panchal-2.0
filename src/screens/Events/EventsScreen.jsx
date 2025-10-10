@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const EventsScreen = ({ navigation }) => {
 
@@ -60,18 +61,9 @@ const EventsScreen = ({ navigation }) => {
         </TouchableOpacity>
     );
 
-    const handleBack = () => {
-        navigation?.goBack();
-    };
-
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                    <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Event Screen</Text>
-            </View>
+            <HeaderBack title="Business Directory" navigation={navigation} />
             <FlatList
                 data={events}
                 keyExtractor={(item) => item.id}

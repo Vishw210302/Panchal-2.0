@@ -16,6 +16,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { loginMember } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
+import { useUser } from '../../context/UserContext';
 
 const LoginScreen = () => {
 
@@ -26,6 +27,7 @@ const LoginScreen = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const {setUserData} = useUser();
 
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,7 +36,7 @@ const LoginScreen = () => {
 
   const storeUserData = async (userData) => {
     try {
-      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      setUserData(userData.member);
 
       if (userData.user) {
         await AsyncStorage.setItem('userInfo', JSON.stringify(userData.user));

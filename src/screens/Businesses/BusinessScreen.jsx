@@ -13,16 +13,14 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getBusinesListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import ENV from '../../config/env';
+import HeaderBack from '../../components/common/HeaderBack';
+
 const BusinessScreen = ({ navigation }) => {
 
     const [businessListing, setBusinessListing] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
-
-    const handleBack = () => {
-        navigation?.goBack();
-    };
 
     const fetchBusinessListing = useCallback(async () => {
         try {
@@ -195,12 +193,7 @@ const BusinessScreen = ({ navigation }) => {
     if (loading) {
         return (
             <View style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                        <MaterialIcons name="arrow-back-ios" color="#000" size={24} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Business Directory</Text>
-                </View>
+                <HeaderBack title="Business Directory" navigation={navigation} />
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={COLORS.primary} />
                     <Text style={styles.loadingText}>Loading businesses...</Text>
@@ -211,12 +204,7 @@ const BusinessScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                    <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Business Directory</Text>
-            </View>
+            <HeaderBack title="Business Directory" navigation={navigation} />
             <FlatList
                 data={businessListing}
                 keyExtractor={keyExtractor}

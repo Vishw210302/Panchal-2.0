@@ -7,17 +7,16 @@ import {
     StatusBar,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View
 } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getAboutUsDataListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import OurCodeValuesAboutUs from './OurCodeValuesAboutUs';
 import WhatWeDoAboutUs from './WhatWeDoAboutUs';
 import ENV from '../../config/env';
+import HeaderBack from '../../components/common/HeaderBack';
 
-const { width, height } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
 
 const stripHtmlTags = (html) => {
     if (!html) return '';
@@ -76,12 +75,7 @@ const AboutUsScreen = ({ navigation }) => {
     if (!displayData) {
         return (
             <View style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                        <MaterialIcons name="arrow-back-ios" color="#000" size={24} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>About Us</Text>
-                </View>
+                <HeaderBack title="About Us" navigation={navigation} />
                 <View style={styles.loadingContainer}>
                     <Text style={styles.loadingText}>Loading...</Text>
                 </View>
@@ -91,13 +85,7 @@ const AboutUsScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                    <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>About Us</Text>
-            </View>
-
+            <HeaderBack title="About Us" navigation={navigation} />
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}
@@ -171,8 +159,8 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: 'row',
         justifyContent: 'flex-start',
-        alignItems: 'flex-end',
-        height: 100,
+        alignItems: 'center',
+        height: Platform.OS === "ios" ? 90 : 100,
         paddingHorizontal: 20,
         paddingVertical: 15,
         backgroundColor: COLORS.primary,
