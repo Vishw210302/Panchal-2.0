@@ -13,6 +13,9 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const { width, height } = Dimensions.get('window');
 
@@ -51,7 +54,7 @@ const Onboarding = ({ onComplete }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef(null);
     const scrollX = useRef(new Animated.Value(0)).current;
-
+    const navigation = useNavigation();
     const viewableItemsChanged = useRef(({ viewableItems }) => {
         if (viewableItems.length > 0) {
             setCurrentIndex(viewableItems[0].index);
@@ -60,15 +63,24 @@ const Onboarding = ({ onComplete }) => {
 
     const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
-    const scrollTo = () => {
+    const scrollTo = async () => {
+        console.log("scrolling to next");
+
         if (currentIndex < slides.length - 1) {
             flatListRef.current.scrollToIndex({ index: currentIndex + 1 });
         } else {
+            console.log("Onboarding complete");
+            await AsyncStorage.setItem('Onboarding', 'OnboardingCompleted');
+            // navigation.navigate('RegisterUser');
+            navigation.navigate('MainTabs', { screen: 'Home' });
             onComplete?.();
         }
     };
 
-    const skipToEnd = () => {
+    const skipToEnd = async() => {
+        console.log("Skipping to end");
+        await AsyncStorage.setItem('Onboarding', 'OnboardingCompleted');
+        navigation.navigate('MainTabs', { screen: 'Home' });
         flatListRef.current.scrollToIndex({ index: slides.length - 1 });
     };
 
@@ -86,7 +98,7 @@ const Onboarding = ({ onComplete }) => {
         <View style={styles.pagination}>
             {slides.map((_, index) => {
                 const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-                
+
                 const dotWidth = scrollX.interpolate({
                     inputRange,
                     outputRange: [10, 30, 10],
@@ -116,7 +128,7 @@ const Onboarding = ({ onComplete }) => {
         <View style={styles.container}>
             <View style={styles.topSection}>
                 {currentIndex < slides.length - 1 && (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.skipButton}
                         onPress={skipToEnd}
                     >
@@ -146,7 +158,7 @@ const Onboarding = ({ onComplete }) => {
             <Pagination />
 
             <View style={styles.bottomSection}>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={[
                         styles.button,
                         currentIndex === slides.length - 1 && styles.buttonLast
@@ -156,10 +168,10 @@ const Onboarding = ({ onComplete }) => {
                     <Text style={styles.buttonText}>
                         {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
                     </Text>
-                    <MaterialIcons 
-                        name={currentIndex === slides.length - 1 ? 'check' : 'arrow-forward'} 
-                        size={24} 
-                        color={COLORS.white} 
+                    <MaterialIcons
+                        name={currentIndex === slides.length - 1 ? 'check' : 'arrow-forward'}
+                        size={24}
+                        color={COLORS.white}
                     />
                 </TouchableOpacity>
             </View>

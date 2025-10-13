@@ -4,7 +4,6 @@ import { useContext, useEffect, useState } from 'react';
 import {
     Alert,
     FlatList,
-    Image,
     KeyboardAvoidingView,
     Modal,
     Platform,
@@ -14,15 +13,18 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    ActivityIndicator
+    ActivityIndicator,
+    Image
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
-import { getVillagesListing, getPerents, createFamilyMember } from '../../api/user_api';
+import { getVillagesListing, getPerents, updateMember, editMember } from '../../api/user_api';
+import { FCMContext } from '../../services/FCMContext';
 import { COLORS } from '../../styles/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const AddFamilyMember = ({ route }) => {
+const EditFamilyMember = ({ route }) => {
+    const { memberId } = route.params || {}; // Get member ID from route params
 
     const [formData, setFormData] = useState({
         firstname: { value: '', label: '' },
@@ -44,7 +46,7 @@ const AddFamilyMember = ({ route }) => {
         relationship: { value: '', label: '' },
         parent_id: { value: '', label: '' },
         locations_id: { value: '', label: '' },
-        photo: { value: null, label: '' },
+        photo: { value: null, label: '', uri: '' },
     });
     const [currentStep, setCurrentStep] = useState(1);
     const [modalVisible, setModalVisible] = useState(false);
@@ -56,11 +58,12 @@ const AddFamilyMember = ({ route }) => {
     const [perentOptions, setperentOptions] = useState([]);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [selectedImage, setSelectedImage] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const totalSteps = 4;
     const navigation = useNavigation();
-
+    const { fcmToken } = useContext(FCMContext);
+    console.log(formData, "Form Data...");
     const genderOptions = [
         { label: 'Male', value: 'Male' },
         { label: 'Female', value: 'Female' },
@@ -103,6 +106,7 @@ const AddFamilyMember = ({ route }) => {
         { label: 'Other', value: 'other' },
     ];
 
+    // Fetch villages
     useEffect(() => {
         getVillagesListing()
             .then((res) => {
@@ -130,6 +134,7 @@ const AddFamilyMember = ({ route }) => {
             });
     }, []);
 
+    // Fetch parents
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -140,7 +145,6 @@ const AddFamilyMember = ({ route }) => {
                     const res = await getPerents(parsedUserData.member._id);
                     setperentData(res);
 
-                    // Transform parent data for dropdown
                     if (res && Array.isArray(res)) {
                         const transformedParents = res.map(parent => ({
                             label: `${parent.firstname} ${parent.lastname}`,
@@ -158,6 +162,91 @@ const AddFamilyMember = ({ route }) => {
 
         fetchUserData();
     }, []);
+
+    // Fetch member data for editing
+    useEffect(() => {
+        const fetchMemberData = async () => {
+            if (!memberId) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+                const response = await editMember(memberId);
+                console.log(response && response.data, "Member data fetched for editing...");
+                if (response) {
+                    const member = response;
+
+                    console.log('Member data:', member);
+                    // Parse date of birth
+                    let dobDate = null;
+                    let dobDisplay = '';
+                    if (member.dob) {
+                        dobDate = new Date(member.dob);
+                        dobDisplay = `${dobDate.getDate().toString().padStart(2, '0')}/${(dobDate.getMonth() + 1).toString().padStart(2, '0')}/${dobDate.getFullYear()}`;
+                        setSelectedDate(dobDate);
+                    }
+
+                    // Find village label
+                    const villageLabel = villageOptions.find(v => v.value === member.locations_id)?.label || '';
+
+                    // Find parent label
+                    const parentLabel = perentOptions.find(p => p.value === member.parent_id)?.label || '';
+
+                    // Find gender label
+                    const genderLabel = genderOptions.find(g => g.value === member.gender)?.label || member.gender;
+
+                    // Find education label
+                    const educationLabel = educationOptions.find(e => e.value === member.education)?.label || member.education;
+
+                    // Find marital status label
+                    const maritalLabel = maritalStatusOptions.find(m => m.value === member.marital_status)?.label || member.marital_status;
+
+                    // Find relationship label
+                    const relationshipLabel = relationshipOptions.find(r => r.value === member.relationship)?.label || member.relationship;
+
+                    setFormData({
+                        firstname: { value: member.firstname || '', label: 'First Name' },
+                        middlename: { value: member.middlename || '', label: 'Middle Name' },
+                        lastname: { value: member.lastname || '', label: 'Last Name' },
+                        email: { value: member.email || '', label: 'Email' },
+                        password: { value: '', label: 'Password' },
+                        mobile_number: { value: member.mobile_number || '', label: 'Mobile Number' },
+                        dob: {
+                            value: member.dob || '',
+                            label: 'Date of Birth',
+                            displayValue: dobDisplay,
+                            dateObject: dobDate
+                        },
+                        gender: { value: member.gender || '', label: genderLabel },
+                        education: { value: member.education || '', label: educationLabel },
+                        job: { value: member.job || '', label: 'Job' },
+                        state: { value: member.state || '', label: 'State' },
+                        city: { value: member.city || '', label: 'City' },
+                        village: { value: member.locations_id || '', label: villageLabel },
+                        pincode: { value: member.pincode || '', label: 'Pincode' },
+                        marital_status: { value: member.marital_status || '', label: maritalLabel },
+                        address: { value: member.address || '', label: 'Address' },
+                        relationship: { value: member.relationship || '', label: relationshipLabel },
+                        parent_id: { value: member.parent_id || '', label: parentLabel },
+                        locations_id: { value: member.locations_id || '', label: villageLabel },
+                        photo: { value: null, label: '', uri: member.photo || '' },
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching member data:', error);
+                Alert.alert('Error', 'Failed to load member data. Please try again.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        // Wait for village and parent options to load before fetching member data
+        if (villageOptions.length > 0 && perentOptions.length > 0) {
+            fetchMemberData();
+        }
+    }, [memberId, villageOptions.length, perentOptions.length]);
 
     const updateField = (field, value, label = '') => {
         setFormData(prev => ({
@@ -200,7 +289,6 @@ const AddFamilyMember = ({ route }) => {
     const selectOption = (value, label, additionalData = {}) => {
         updateField(currentSelector, value, label);
 
-        // If selecting parent, also update middlename and lastname
         if (currentSelector === 'parent_id') {
             const selectedParent = perentOptions.find(p => p.value === value);
             if (selectedParent) {
@@ -210,33 +298,6 @@ const AddFamilyMember = ({ route }) => {
         }
 
         setModalVisible(false);
-    };
-
-    const selectImage = () => {
-        const options = {
-            mediaType: 'photo',
-            quality: 1,
-            maxWidth: 800,
-            maxHeight: 800,
-        };
-
-        launchImageLibrary(options, (response) => {
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            } else if (response.errorCode) {
-                console.log('ImagePicker Error: ', response.errorMessage);
-                Alert.alert('Error', 'Failed to select image. Please try again.');
-            } else if (response.assets && response.assets[0]) {
-                const imageData = response.assets[0];
-                setSelectedImage(imageData.uri);
-                updateField('photo', imageData, 'Profile Photo');
-            }
-        });
-    };
-
-    const removeImage = () => {
-        setSelectedImage(null);
-        updateField('photo', null, '');
     };
 
     const openDatePicker = () => {
@@ -259,14 +320,42 @@ const AddFamilyMember = ({ route }) => {
         setShowDatePicker(false);
     };
 
+    const handleImagePick = () => {
+        const options = {
+            mediaType: 'photo',
+            quality: 0.8,
+            maxWidth: 1024,
+            maxHeight: 1024,
+        };
+
+        launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+                Alert.alert('Error', 'Failed to pick image');
+            } else if (response.assets && response.assets[0]) {
+                const asset = response.assets[0];
+                setFormData(prev => ({
+                    ...prev,
+                    photo: {
+                        value: asset,
+                        label: 'Profile Photo',
+                        uri: asset.uri
+                    }
+                }));
+            }
+        });
+    };
+
     const validateEmail = (email) => {
-        if (!email) return true; // Email is optional
+        if (!email) return true;
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     };
 
     const validatePhone = (phone) => {
-        if (!phone) return true; // Phone is optional
+        if (!phone) return true;
         const phoneRegex = /^[6-9]\d{9}$/;
         return phoneRegex.test(phone.replace(/\D/g, ''));
     };
@@ -314,12 +403,10 @@ const AddFamilyMember = ({ route }) => {
                 break;
 
             case 2:
-                // Email is optional but must be valid if provided
                 if (formData.email?.value?.trim() && !validateEmail(formData.email.value.trim())) {
                     newErrors.email = 'Please enter a valid email address';
                 }
 
-                // Mobile is optional but must be valid if provided
                 if (formData.mobile_number?.value?.trim() && !validatePhone(formData.mobile_number.value)) {
                     newErrors.mobile_number = 'Please enter a valid 10-digit mobile number';
                 }
@@ -361,8 +448,6 @@ const AddFamilyMember = ({ route }) => {
             if (currentStep < totalSteps) {
                 setCurrentStep(currentStep + 1);
             }
-        } else {
-            console.log("Error of Validation");
         }
     };
 
@@ -392,38 +477,46 @@ const AddFamilyMember = ({ route }) => {
             try {
                 setIsSubmitting(true);
 
-                // Prepare payload
-                const payload = {
-                    firstname: formData.firstname.value.trim(),
-                    middlename: formData.middlename.value.trim(),
-                    lastname: formData.lastname.value.trim(),
-                    password: formData.firstname.value.trim().toLowerCase() + '123', // Auto-generate password
-                    email: formData.email.value.trim() || '',
-                    mobile_number: formData.mobile_number.value.trim() || '',
-                    dob: formData.dob.value,
-                    gender: formData.gender.value,
-                    education: formData.education.value || '',
-                    job: formData.job.value.trim() || '',
-                    state: formData.state.value.trim(),
-                    city: formData.city.value.trim(),
-                    pincode: formData.pincode.value.trim(),
-                    marital_status: formData.marital_status.value || '',
-                    address: formData.address.value.trim() || '',
-                    relationship: formData.relationship.value,
-                    parent_id: formData.parent_id.value,
-                    locations_id: formData.village.value || '',
-                    photo: formData.photo.value || null,
-                };
+                // Create FormData for multipart upload
+                const formDataToSend = new FormData();
 
-                console.log('Submitting payload:', payload);
+                formDataToSend.append('firstname', formData.firstname.value.trim());
+                formDataToSend.append('middlename', formData.middlename.value.trim());
+                formDataToSend.append('lastname', formData.lastname.value.trim());
+                formDataToSend.append('email', formData.email.value.trim() || '');
+                formDataToSend.append('mobile_number', formData.mobile_number?.value?.toString()?.trim() || '');
+                formDataToSend.append('dob', formData.dob.value);
+                formDataToSend.append('gender', formData.gender.value);
+                formDataToSend.append('education', formData.education.value || '');
+                formDataToSend.append('job', formData.job.value.trim() || '');
+                formDataToSend.append('state', formData.state.value.trim());
+                formDataToSend.append('city', formData.city.value.trim());
+                formDataToSend.append('pincode', formData.pincode.value.trim());
+                formDataToSend.append('marital_status', formData.marital_status.value || '');
+                formDataToSend.append('address', formData.address.value.trim() || '');
+                formDataToSend.append('relationship', formData.relationship.value);
+                formDataToSend.append('parent_id', formData.parent_id.value);
+                formDataToSend.append('locations_id', formData.village.value || '');
 
-                // Call API
-                const response = await createFamilyMember(payload);
+                // Add photo if selected
+                if (formData.photo.value && formData.photo.value.uri) {
+                    const photoFile = {
+                        uri: formData.photo.value.uri,
+                        type: formData.photo.value.type || 'image/jpeg',
+                        name: formData.photo.value.fileName || 'profile.jpg',
+                    };
+                    formDataToSend.append('photo', photoFile);
+                }
+
+                console.log('Updating member with ID:', memberId);
+
+                // Call updateMember API
+                const response = await updateMember(memberId, formDataToSend);
 
                 if (response) {
                     Alert.alert(
                         'Success',
-                        'Family member added successfully!',
+                        'Family member updated successfully!',
                         [
                             {
                                 text: 'OK',
@@ -433,17 +526,15 @@ const AddFamilyMember = ({ route }) => {
                     );
                 }
             } catch (error) {
-                console.error('Error creating family member:', error);
+                console.error('Error updating family member:', error);
                 Alert.alert(
                     'Error',
-                    error.message || 'Failed to add family member. Please try again.',
+                    error.message || 'Failed to update family member. Please try again.',
                     [{ text: 'OK' }]
                 );
             } finally {
                 setIsSubmitting(false);
             }
-        } else {
-            console.log("Validation Error - Please fill all required fields correctly.");
         }
     };
 
@@ -592,6 +683,29 @@ const AddFamilyMember = ({ route }) => {
         </View>
     );
 
+    const renderPhotoField = () => (
+        <View style={styles.inputGroup}>
+            <Text style={styles.label}>Profile Photo</Text>
+            <TouchableOpacity
+                activeOpacity={0.7}
+                style={styles.photoContainer}
+                onPress={handleImagePick}
+            >
+                {formData.photo?.uri ? (
+                    <Image
+                        source={{ uri: formData.photo.uri }}
+                        style={styles.photoPreview}
+                    />
+                ) : (
+                    <View style={styles.photoPlaceholder}>
+                        <MaterialIcons name="add-a-photo" size={40} color={COLORS.gray} />
+                        <Text style={styles.photoPlaceholderText}>Tap to add photo</Text>
+                    </View>
+                )}
+            </TouchableOpacity>
+        </View>
+    );
+
     const renderPersonalInfo = () => (
         <View style={styles.stepContainer}>
             <View style={styles.stepHeader}>
@@ -599,35 +713,7 @@ const AddFamilyMember = ({ route }) => {
                 <Text style={styles.stepSubtitle}>Step {currentStep} of {totalSteps}</Text>
             </View>
 
-            {/* Profile Photo Section */}
-            <View style={styles.imageSection}>
-                <Text style={styles.label}>Profile Photo (Optional)</Text>
-                {selectedImage ? (
-                    <View style={styles.imagePreviewContainer}>
-                        <Image
-                            source={{ uri: selectedImage }}
-                            style={styles.imagePreview}
-                        />
-                        <TouchableOpacity
-                            style={styles.removeImageButton}
-                            onPress={removeImage}
-                            activeOpacity={0.7}
-                        >
-                            <MaterialIcons name="close" size={20} color={COLORS.white} />
-                        </TouchableOpacity>
-                    </View>
-                ) : (
-                    <TouchableOpacity
-                        style={styles.imagePickerButton}
-                        onPress={selectImage}
-                        activeOpacity={0.7}
-                    >
-                        <MaterialIcons name="add-a-photo" size={32} color={COLORS.gray} />
-                        <Text style={styles.imagePickerText}>Tap to select photo</Text>
-                    </TouchableOpacity>
-                )}
-            </View>
-
+            {renderPhotoField()}
             {renderInputField('First Name', 'firstname', 'Enter first name', { required: true, autoCapitalize: 'words' })}
             {renderSelectorField('Select Parent', 'parent_id', 'Choose parent', perentOptions, true)}
             {renderDatePickerField('Date of Birth', 'dob', 'Select date of birth', true)}
@@ -708,6 +794,15 @@ const AddFamilyMember = ({ route }) => {
         }
     };
 
+    if (isLoading) {
+        return (
+            <View style={styles.loadingScreen}>
+                <ActivityIndicator size="large" color={COLORS.primary} />
+                <Text style={styles.loadingText}>Loading member data...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <KeyboardAvoidingView
@@ -719,8 +814,8 @@ const AddFamilyMember = ({ route }) => {
                         <MaterialIcons name="arrow-back-ios" color={COLORS.white} size={24} />
                     </TouchableOpacity>
                     <View style={styles.headerContent}>
-                        <Text style={styles.headerTitle}>Add New Family Member</Text>
-                        <Text style={styles.headerSubtitle}>Join us and get started</Text>
+                        <Text style={styles.headerTitle}>Edit Family Member</Text>
+                        <Text style={styles.headerSubtitle}>Update member information</Text>
                     </View>
                 </View>
 
@@ -769,10 +864,10 @@ const AddFamilyMember = ({ route }) => {
                                 {isSubmitting ? (
                                     <View style={styles.loadingContainer}>
                                         <ActivityIndicator color={COLORS.white} size="small" />
-                                        <Text style={[styles.primaryButtonText, { marginLeft: 10 }]}>Adding...</Text>
+                                        <Text style={[styles.primaryButtonText, { marginLeft: 10 }]}>Updating...</Text>
                                     </View>
                                 ) : (
-                                    <Text style={styles.primaryButtonText}>Add Member</Text>
+                                    <Text style={styles.primaryButtonText}>Update Member</Text>
                                 )}
                             </TouchableOpacity>
                         )}
@@ -793,6 +888,18 @@ const styles = StyleSheet.create({
     },
     keyboardView: {
         flex: 1,
+    },
+    loadingScreen: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: COLORS.background,
+    },
+    loadingText: {
+        marginTop: 16,
+        fontSize: 16,
+        color: COLORS.gray,
+        fontWeight: '500',
     },
     header: {
         backgroundColor: COLORS.primary,
@@ -931,6 +1038,35 @@ const styles = StyleSheet.create({
     },
     placeholderText: {
         color: COLORS.gray,
+    },
+    photoContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+    photoPreview: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        borderWidth: 3,
+        borderColor: COLORS.primary,
+    },
+    photoPlaceholder: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: COLORS.lightGray || '#f5f5f5',
+        borderWidth: 2,
+        borderColor: COLORS.border,
+        borderStyle: 'dashed',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    photoPlaceholderText: {
+        fontSize: 12,
+        color: COLORS.gray,
+        marginTop: 8,
+        textAlign: 'center',
     },
     iosDatePickerActions: {
         flexDirection: 'row',
@@ -1084,55 +1220,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: COLORS.primary,
     },
-    imageSection: {
-        marginBottom: 24,
-        alignItems: 'center',
-    },
-    imagePickerButton: {
-        width: 150,
-        height: 150,
-        borderRadius: 75,
-        backgroundColor: COLORS.lightGray || '#f5f5f5',
-        borderWidth: 2,
-        borderColor: COLORS.border,
-        borderStyle: 'dashed',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 12,
-    },
-    imagePickerText: {
-        marginTop: 8,
-        fontSize: 14,
-        color: COLORS.gray,
-        fontWeight: '500',
-    },
-    imagePreviewContainer: {
-        width: 150,
-        height: 150,
-        borderRadius: 75,
-        marginTop: 12,
-        position: 'relative',
-    },
-    imagePreview: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 75,
-        borderWidth: 2,
-        borderColor: COLORS.primary,
-    },
-    removeImageButton: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        backgroundColor: COLORS.error || '#ff4444',
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 2,
-        borderColor: COLORS.white,
-    },
 });
 
-export default AddFamilyMember;
+export default EditFamilyMember;

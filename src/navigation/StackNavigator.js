@@ -23,6 +23,10 @@ import AddFamilyMember from '../screens/Settings/AddFamilyMember';
 import OwnBussiness from '../screens/Settings/OwnBussiness';
 import BussinesRequest from '../screens/Settings/BussinesRequest';
 import Onboarding from '../screens/Onboarding/Onboarding';
+import EditFamilyMember from '../screens/Settings/EditFamilyMember';
+import TermsAndConditions from '../screens/Terms/TermAndCondition';
+import NotificationsScreen from '../screens/Notification/NotificationsScreen';
+import EditProfile from '../screens/Profile/EditProfileScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -144,6 +148,26 @@ const StackNavigator = () => {
                 name="Onboarding"
                 component={Onboarding}
                 options={{ headerShown: false, title: 'Onboarding' }}
+            />
+            <Stack.Screen
+                name="EditFamilyMember"
+                component={EditFamilyMember}
+                options={{ headerShown: false, title: 'EditFamilyMember' }}
+            />
+            <Stack.Screen
+                name="TermsAndConditions"
+                component={TermsAndConditions}
+                options={{ headerShown: false, title: 'TermsAndConditions' }}
+            />
+            <Stack.Screen
+                name="NotificationsScreen"
+                component={NotificationsScreen}
+                options={{ headerShown: false, title: 'NotificationsScreen' }}
+            />
+            <Stack.Screen
+                name="EditProfile"
+                component={EditProfile}
+                options={{ headerShown: false, title: 'EditProfile' }}
             />
         </Stack.Navigator>
     );

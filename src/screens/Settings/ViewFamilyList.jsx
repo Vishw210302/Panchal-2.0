@@ -14,7 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { familyList } from '../../api/user_api';
+import { familyList, deleteMember } from '../../api/user_api';
 
 const ViewFamilyList = () => {
     const navigation = useNavigation();
@@ -36,7 +36,6 @@ const ViewFamilyList = () => {
                 setCurrentUser(parsedUserData.member);
 
                 const res = await familyList(parsedUserData.member._id);
-                console.log(res.family, "Family data...");
 
                 if (res && res.family) {
                     // Transform the family data to match our display format
@@ -102,11 +101,11 @@ const ViewFamilyList = () => {
             const today = new Date();
             let age = today.getFullYear() - birthDate.getFullYear();
             const monthDiff = today.getMonth() - birthDate.getMonth();
-            
+
             if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
                 age--;
             }
-            
+
             return age;
         } catch (error) {
             return '-';
@@ -126,7 +125,9 @@ const ViewFamilyList = () => {
             Alert.alert('Info', 'You can edit your profile from the Profile section');
             return;
         }
-        Alert.alert('Edit Member', `Edit ${member.name}`);
+        console.log(member, "Editing member...");
+        navigation.navigate('EditFamilyMember', { memberId: member.id });
+        // Alert.alert('Edit Member', `Edit ${member.name}`);
         // navigation.navigate('EditFamilyMember', { member });
     };
 
@@ -150,11 +151,13 @@ const ViewFamilyList = () => {
                     onPress: async () => {
                         try {
                             // Call delete API here
+                            const deleteFamilyMember = await deleteMember(member.id);
                             // await deleteFamilyMember(member.id);
-                            
                             // For now, just remove from state
-                            setFamilyMembers(familyMembers.filter(m => m.id !== member.id));
-                            Alert.alert('Success', 'Family member removed successfully');
+                            // setFamilyMembers(familyMembers.filter(m => m.id !== member.id));
+                            console.log(deleteFamilyMember, " Delete response");
+                            fetchFamilyData();
+                            Alert.alert('Success', 'Family member removed successfully',);
                         } catch (error) {
                             Alert.alert('Error', 'Failed to delete family member');
                         }
@@ -180,7 +183,7 @@ const ViewFamilyList = () => {
     };
 
     const getRelationshipIcon = (relationship) => {
-        switch(relationship.toLowerCase()) {
+        switch (relationship.toLowerCase()) {
             case 'self':
                 return 'person';
             case 'spouse':
@@ -202,7 +205,7 @@ const ViewFamilyList = () => {
     };
 
     const getRelationshipColor = (relationship) => {
-        switch(relationship.toLowerCase()) {
+        switch (relationship.toLowerCase()) {
             case 'self':
                 return COLORS.primary;
             case 'spouse':
@@ -259,11 +262,11 @@ const ViewFamilyList = () => {
             </View>
 
             {/* Content */}
-            <ScrollView 
-                style={styles.content} 
+            <ScrollView
+                style={styles.content}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContent}>
-                
+
                 {/* Family Count */}
                 <View style={styles.countCard}>
                     <Ionicons name="people" size={32} color={COLORS.primary} />
@@ -298,13 +301,13 @@ const ViewFamilyList = () => {
                                     styles.memberIconContainer,
                                     { backgroundColor: `${getRelationshipColor(member.relationship)}15` }
                                 ]}>
-                                    <Ionicons 
-                                        name={getRelationshipIcon(member.relationship)} 
-                                        size={28} 
-                                        color={getRelationshipColor(member.relationship)} 
+                                    <Ionicons
+                                        name={getRelationshipIcon(member.relationship)}
+                                        size={28}
+                                        color={getRelationshipColor(member.relationship)}
                                     />
                                 </View>
-                                
+
                                 <View style={styles.memberInfo}>
                                     <View style={styles.nameRow}>
                                         <Text style={styles.memberName}>{member.name}</Text>
@@ -336,7 +339,7 @@ const ViewFamilyList = () => {
 
                                 {!member.isSelf && (
                                     <View style={styles.actionsContainer}>
-                                        <TouchableOpacity 
+                                        <TouchableOpacity
                                             onPress={(e) => {
                                                 e.stopPropagation();
                                                 handleEditMember(member);
@@ -344,7 +347,7 @@ const ViewFamilyList = () => {
                                             style={styles.actionButton}>
                                             <Feather name="edit-2" size={18} color={COLORS.primary} />
                                         </TouchableOpacity>
-                                        <TouchableOpacity 
+                                        <TouchableOpacity
                                             onPress={(e) => {
                                                 e.stopPropagation();
                                                 handleDeleteMember(member);
@@ -365,7 +368,7 @@ const ViewFamilyList = () => {
 
             {/* Add New Member Button - Fixed at bottom */}
             <View style={styles.buttonContainer}>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.addButton}
                     activeOpacity={0.8}
                     onPress={handleAddMember}>

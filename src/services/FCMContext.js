@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../styles/colors';
+import { NotificationService } from '../screens/Services/NotificationService';
+
 
 export const FCMContext = createContext();
 
@@ -146,6 +148,18 @@ export const FCMProvider = ({ children }) => {
   const [fcmToken, setFcmToken] = useState(null);
   const [notificationVisible, setNotificationVisible] = useState(false);
   const [currentNotification, setCurrentNotification] = useState(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+
+  // Load initial unread count
+  useEffect(() => {
+    loadUnreadCount();
+  }, []);
+
+  const loadUnreadCount = async () => {
+    const count = await NotificationService.getUnreadCount();
+    setUnreadCount(count);
+  };
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -156,12 +170,22 @@ export const FCMProvider = ({ children }) => {
         data: remoteMessage.data,
       });
 
-      setNotificationVisible(true);
+      if (savedNotification) {
+        setCurrentNotification(savedNotification);
+        setNotificationVisible(true);
+        loadUnreadCount(); // Update count
+      }
+
 
     });
 
     messaging().setBackgroundMessageHandler(async remoteMessage => {
       console.log('FCM Message in background:', remoteMessage);
+      await NotificationService.saveNotification({
+        title: remoteMessage.notification?.title || 'New Notification',
+        body: remoteMessage.notification?.body || 'You have a new message',
+        data: remoteMessage.data,
+      });
     });
 
     return unsubscribe;
@@ -187,8 +211,17 @@ export const FCMProvider = ({ children }) => {
     }, 300);
   };
 
+
+  const refreshUnreadCount = async () => {
+    await loadUnreadCount();
+  };
+
   return (
-    <FCMContext.Provider value={{ fcmToken }}>
+    <FCMContext.Provider value={{
+      fcmToken,
+      unreadCount,
+      refreshUnreadCount
+    }}>
       {children}
       <NotificationModal
         visible={notificationVisible}

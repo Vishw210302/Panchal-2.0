@@ -16,9 +16,14 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { loginMember } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
+import { useContext } from 'react';
+import { FCMContext } from '../../services/FCMContext';
+
+
 
 const LoginScreen = () => {
 
+  const { fcmToken } = useContext(FCMContext);
   const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -78,7 +83,8 @@ const LoginScreen = () => {
     setIsLoading(true);
 
     try {
-      const response = await loginMember({ email, password });
+
+      const response = await loginMember({ email, password, fcmToken });
 
       if (response && response.success) {
         const stored = await storeUserData(response);

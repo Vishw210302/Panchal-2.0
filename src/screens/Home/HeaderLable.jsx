@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { useState } from "react";
 import {
+    Alert,
     Dimensions,
     Image,
     Modal,
@@ -11,21 +12,40 @@ import {
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import NotificationModal from "./NotificationModal";
+import { FCMContext } from '../../services/FCMContext'; // Adjust path as needed
+import { useEffect } from 'react';
+import { useContext } from 'react';
+
 
 const { height } = Dimensions.get("window");
 
 const HeaderLabel = () => {
 
     const [profileModalVisible, setProfileModalVisible] = useState(false);
+    const { unreadCount, refreshUnreadCount } = useContext(FCMContext);
     const [notificationModalVisible, setNotificationModalVisible] = useState(false);
     const handleProfilePress = () => setProfileModalVisible(true);
-    const handleNotificationPress = () => setNotificationModalVisible(true);
+
     const closeProfileModal = () => setProfileModalVisible(false);
     const closeNotificationModal = () => setNotificationModalVisible(false);
     const navigation = useNavigation();
 
-    const notificationCount = 3;
+    const notificationCount = 0;
 
+    // Refresh count when component focuses
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            refreshUnreadCount?.();
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
+    const handleNotificationPress = () => {
+        // Alert.alert('Notifications', 'View your notifications');
+        navigation.navigate('NotificationsScreen')
+        // setNotificationModalVisible(true);
+    };
     const styles = {
         headerContainer: {
             backgroundColor: '#FF6B35',
@@ -267,10 +287,10 @@ const HeaderLabel = () => {
                                     size={30}
                                     fallback="🔔"
                                 />
-                                {notificationCount > 0 && (
+                                {unreadCount > 0 && (
                                     <View style={styles.notificationBadge}>
                                         <Text style={styles.badgeText}>
-                                            {notificationCount > 99 ? '99+' : notificationCount}
+                                            {unreadCount > 99 ? '99+' : unreadCount}
                                         </Text>
                                     </View>
                                 )}

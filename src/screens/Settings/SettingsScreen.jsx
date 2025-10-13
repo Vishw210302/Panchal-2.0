@@ -31,14 +31,16 @@ const SettingsScreen = () => {
     const navigation = useNavigation();
 
     const handleProfilePress = () => {
-        Alert.alert('Profile', 'Navigate to profile editing screen');
+        
+        navigation.navigate('EditProfile');
+        // Alert.alert('Profile', 'Navigate to profile editing screen');
     };
 
     const handleLanguagePress = () => {
         Alert.alert('Language', 'Available: English, Gujarati, Hindi');
     };
     const handleViewFamilyPress = () => {
-         navigation.navigate('ViewFamilyList');
+        navigation.navigate('ViewFamilyList');
         // Alert.alert('Language', 'Available: English, Gujarati, Hindi');
     };
 
@@ -49,9 +51,8 @@ const SettingsScreen = () => {
 
     const handleTermsPress = () => {
         
-         navigation.navigate('Onboarding');
-
-        // Alert.alert('Terms & Conditions', 'View terms of service');
+         navigation.navigate('TermsAndConditions');
+        Alert.alert('Terms & Conditions', 'View terms of service');
     };
 
     const handleShareApp = async () => {
@@ -328,7 +329,7 @@ const SettingsScreen = () => {
                     icon="business-outline"
                     title="Business Directory"
                     subtitle="Find Panchal community businesses"
-                    onPress={() => Alert.alert('Business Directory', 'Browse businesses')}
+                    onPress={() => navigation.navigate('BusinessScreen')}
                 />
             </SettingsSection>
 
@@ -351,12 +352,7 @@ const SettingsScreen = () => {
                     subtitle="Read our terms of service"
                     onPress={handleTermsPress}
                 />
-                <SettingsItem
-                    icon="shield-outline"
-                    title="Privacy Policy"
-                    subtitle="Learn about data privacy"
-                    onPress={handlePrivacyPress}
-                />
+                
             </SettingsSection>
 
             <View style={styles.logoutSection}>
