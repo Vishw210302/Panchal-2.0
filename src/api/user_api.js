@@ -7,7 +7,7 @@ export const getVillagesListing = () => axiosClient.get('/villages');
 export const getNewsListing = () => axiosClient.get('/news');
 export const getAboutUsDataListing = () => axiosClient.get('/about');
 export const getBusinesListing = () => axiosClient.get('/businesses?search=approved');
-export const getFAQsListing = () => axiosClient.get('/faqs ');
+export const getFAQsListing = () => axiosClient.get('/faqs');
 export const postOrderCreate = (payload) => axiosClient.post('/create-order', payload);
 export const registerUser = (payload) => axiosClient.post('/createMember', payload);
 export const verifyPayment = (payload) => axiosClient.post('/verify-payment', payload);
@@ -28,3 +28,6 @@ export const getBussinessListing = (id) => axiosClient.get(`/ownBussiness/${id}`
 export const getTermsAndCondition = () => axiosClient.get('/terms');
 export const getEvents = () => axiosClient.get('/events');
 export const getEventDetails = (id) => axiosClient.get(`/editEvent/${id}`);
+export const getSettings = (key) => axiosClient.get(`/settings?key=${key}`);
+export const createEvent = (payload) => axiosClient.post('/createEvent', payload, { headers: { 'Content-Type': 'multipart/form-data' } });
+export const getMyEvents = (id) => axiosClient.get(`/events`);

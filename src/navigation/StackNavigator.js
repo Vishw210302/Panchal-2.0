@@ -27,6 +27,8 @@ import EditFamilyMember from '../screens/Settings/EditFamilyMember';
 import TermsAndConditions from '../screens/Terms/TermAndCondition';
 import NotificationsScreen from '../screens/Notification/NotificationsScreen';
 import EditProfile from '../screens/Profile/EditProfileScreen';
+import AddEvent from '../screens/Events/AddEvent';
+import MyEvents from '../screens/Events/MyEvents';
 
 const Stack = createNativeStackNavigator();
 
@@ -168,6 +170,16 @@ const StackNavigator = () => {
                 name="EditProfile"
                 component={EditProfile}
                 options={{ headerShown: false, title: 'EditProfile' }}
+            />
+            <Stack.Screen
+                name="AddEvent"
+                component={AddEvent}
+                options={{ headerShown: false, title: 'AddEvent' }}
+            />
+            <Stack.Screen
+                name="MyEvents"
+                component={MyEvents}
+                options={{ headerShown: false, title: 'MyEvents' }}
             />
         </Stack.Navigator>
     );

@@ -32,7 +32,6 @@ const TermsAndConditions = () => {
             const response = await getTermsAndCondition();
 
             if (response) {
-                // Handle different response structures
                 if (response.allTerms) {
                     setTermsData(response.allTerms[0]);
                 } else if (Array.isArray(response) && response.length > 0) {
@@ -52,15 +51,45 @@ const TermsAndConditions = () => {
         }
     };
 
-    const stripHtmlTags = (str) => {
-        if (!str) return "";
-        return str.replace(/<\/?[^>]+(>|$)/g, "").trim();
-    };
+    // Enhanced HTML parser for CKEditor content
+    const parseHTMLContent = (htmlContent) => {
+        if (!htmlContent) return [];
 
-    const limitCharacters = (text, charLimit) => {
-        return text.length > charLimit
-            ? text.slice(0, charLimit).trim() + '...'
-            : text;
+        // Split by headings and paragraphs
+        const sections = [];
+        let currentSection = null;
+
+        // Remove opening/closing <p> or <div> and split by tags
+        const cleanHtml = htmlContent.replace(/<\/?p>|<\/?div>/gi, '\n');
+        
+        // Split by h1, h2, h3, etc.
+        const parts = cleanHtml.split(/(<h[1-6][^>]*>.*?<\/h[1-6]>)/gi);
+
+        parts.forEach(part => {
+            const trimmed = part.trim();
+            if (!trimmed) return;
+
+            // Check if it's a heading
+            const headingMatch = trimmed.match(/<h[1-6][^>]*>(.*?)<\/h[1-6]>/i);
+            if (headingMatch) {
+                const title = headingMatch[1].replace(/<\/?[^>]+(>|$)/g, "").trim();
+                currentSection = { title, content: [] };
+                sections.push(currentSection);
+            } else {
+                // It's content - clean HTML tags and add to current section
+                const cleanText = trimmed.replace(/<\/?[^>]+(>|$)/g, "").trim();
+                if (cleanText) {
+                    if (currentSection) {
+                        currentSection.content.push(cleanText);
+                    } else {
+                        // Content before any heading
+                        sections.push({ title: null, content: [cleanText] });
+                    }
+                }
+            }
+        });
+
+        return sections;
     };
 
     useEffect(() => {
@@ -111,6 +140,9 @@ const TermsAndConditions = () => {
             );
         }
 
+        // Parse HTML content from CKEditor
+        const parsedSections = termsData.content ? parseHTMLContent(termsData.content) : [];
+
         return (
             <ScrollView
                 style={styles.contentContainer}
@@ -146,82 +178,30 @@ const TermsAndConditions = () => {
                     </View>
                 )}
 
-                {/* Content */}
-                {termsData.content && (
-                    <View style={styles.textSection}>
-                        <Text style={styles.contentText}>{limitCharacters(stripHtmlTags(termsData.content))}</Text>
-                    </View>
-                )}
-
-                {/* Description (if separate from content) */}
-                {termsData.description && termsData.description !== termsData.content && (
-                    <View style={styles.textSection}>
-                        <Text style={styles.sectionTitle}>Description</Text>
-                        <Text style={styles.contentText}>{termsData.description}</Text>
-                    </View>
-                )}
-
-                {/* Terms (if array of terms) */}
-                {termsData.terms && Array.isArray(termsData.terms) && termsData.terms.length > 0 && (
-                    <View style={styles.textSection}>
-                        <Text style={styles.sectionTitle}>Terms</Text>
-                        {termsData.terms.map((term, index) => (
-                            <View key={index} style={styles.termItem}>
-                                <View style={styles.bulletPoint} />
-                                <Text style={styles.termText}>{term}</Text>
-                            </View>
-                        ))}
-                    </View>
-                )}
-
-                {/* Sections (if structured data) */}
-                {termsData.sections && Array.isArray(termsData.sections) && termsData.sections.length > 0 && (
+                {/* Parsed Content from CKEditor */}
+                {parsedSections.length > 0 && (
                     <View style={styles.sectionsContainer}>
-                        {termsData.sections.map((section, index) => (
+                        {parsedSections.map((section, index) => (
                             <View key={index} style={styles.section}>
                                 {section.title && (
                                     <Text style={styles.sectionTitle}>{section.title}</Text>
                                 )}
-                                {section.content && (
-                                    <Text style={styles.contentText}>{section.content}</Text>
-                                )}
-                                {section.items && Array.isArray(section.items) && (
-                                    <View style={styles.itemsList}>
-                                        {section.items.map((item, itemIndex) => (
-                                            <View key={itemIndex} style={styles.termItem}>
-                                                <View style={styles.bulletPoint} />
-                                                <Text style={styles.termText}>{item}</Text>
-                                            </View>
-                                        ))}
-                                    </View>
-                                )}
+                                {section.content.map((paragraph, pIndex) => (
+                                    <Text key={pIndex} style={styles.contentText}>
+                                        {paragraph}
+                                    </Text>
+                                ))}
                             </View>
                         ))}
                     </View>
                 )}
 
-                {/* Contact Information */}
-                {termsData.contact && (
-                    <View style={styles.contactSection}>
-                        <Text style={styles.sectionTitle}>Contact Us</Text>
-                        {termsData.contact.email && (
-                            <View style={styles.contactItem}>
-                                <MaterialIcons name="email" size={18} color={COLORS.primary} />
-                                <Text style={styles.contactText}>{termsData.contact.email}</Text>
-                            </View>
-                        )}
-                        {termsData.contact.phone && (
-                            <View style={styles.contactItem}>
-                                <MaterialIcons name="phone" size={18} color={COLORS.primary} />
-                                <Text style={styles.contactText}>{termsData.contact.phone}</Text>
-                            </View>
-                        )}
-                        {termsData.contact.address && (
-                            <View style={styles.contactItem}>
-                                <MaterialIcons name="location-on" size={18} color={COLORS.primary} />
-                                <Text style={styles.contactText}>{termsData.contact.address}</Text>
-                            </View>
-                        )}
+                {/* Fallback: Show raw content if parsing fails */}
+                {parsedSections.length === 0 && termsData.content && (
+                    <View style={styles.textSection}>
+                        <Text style={styles.contentText}>
+                            {termsData.content.replace(/<\/?[^>]+(>|$)/g, "").trim()}
+                        </Text>
                     </View>
                 )}
 
@@ -233,7 +213,6 @@ const TermsAndConditions = () => {
                     </Text>
                 </View>
 
-                {/* Bottom Spacing */}
                 <View style={styles.bottomSpacing} />
             </ScrollView>
         );
@@ -241,7 +220,6 @@ const TermsAndConditions = () => {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity
                     onPress={handleBack}
@@ -256,7 +234,6 @@ const TermsAndConditions = () => {
                 </View>
             </View>
 
-            {/* Content */}
             {renderContent()}
         </View>
     );
@@ -272,10 +249,7 @@ const styles = StyleSheet.create({
         paddingBottom: 24,
         height: 140,
         shadowColor: COLORS.black,
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
         shadowRadius: 8,
         elevation: 8,
@@ -398,6 +372,7 @@ const styles = StyleSheet.create({
         color: COLORS.darkGray || '#333',
         lineHeight: 24,
         textAlign: 'justify',
+        marginBottom: 12,
     },
     sectionsContainer: {
         marginTop: 12,
@@ -407,46 +382,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingVertical: 20,
         marginBottom: 12,
-    },
-    termItem: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        marginBottom: 12,
-        paddingLeft: 8,
-    },
-    bulletPoint: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: COLORS.primary,
-        marginTop: 8,
-        marginRight: 12,
-    },
-    termText: {
-        flex: 1,
-        fontSize: 15,
-        color: COLORS.darkGray || '#333',
-        lineHeight: 24,
-    },
-    itemsList: {
-        marginTop: 8,
-    },
-    contactSection: {
-        backgroundColor: COLORS.white,
-        paddingHorizontal: 24,
-        paddingVertical: 20,
-        marginTop: 12,
-    },
-    contactItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 12,
-        marginBottom: 12,
-    },
-    contactText: {
-        fontSize: 15,
-        color: COLORS.darkGray || '#333',
-        flex: 1,
     },
     footerNote: {
         backgroundColor: COLORS.lightGray || '#f9f9f9',

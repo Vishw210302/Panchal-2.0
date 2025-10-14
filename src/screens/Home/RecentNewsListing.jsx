@@ -6,26 +6,29 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
+    ActivityIndicator
 } from 'react-native';
 import { getNewsListing } from '../../api/user_api';
 import ENV from '../../config/env';
 
 const RecentNewsListing = () => {
-
     const navigation = useNavigation();
-    const [newsListing, setNewsListing] = useState([])
+    const [newsListing, setNewsListing] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchNews = async () => {
             try {
+                setLoading(true);
                 const res = await getNewsListing();
                 setNewsListing(res);
             } catch (err) {
                 console.error("Fetch news failed:", err);
+            } finally {
+                setLoading(false);
             }
         };
-
         fetchNews();
     }, []);
 
@@ -42,80 +45,152 @@ const RecentNewsListing = () => {
 
     const handleNewsPress = (newsId) => {
         const selectedNews = newsListing.find(news => news._id === newsId);
-
         navigation.navigate('NewsDetails', {
             newsItem: selectedNews
         });
     };
 
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#4A90E2" />
+            </View>
+        );
+    }
+
     return (
-        <ScrollView
-            style={styles.container}
-            contentContainerStyle={styles.contentContainer}
-            showsVerticalScrollIndicator={false}
-        >
-            {newsListing.map((news) => (
-                <TouchableOpacity
-                    key={news._id}
-                    activeOpacity={0.7}
-                    onPress={() => {
-                        handleNewsPress(news._id)
-                    }}
-                >
-                    <View key={news._id} style={styles.card}>
-                        <Image source={{ uri: `${ENV.IMAGE_URL}${news.image}` }} style={styles.image} />
-                        <View style={styles.textContainer}>
-                            <Text style={styles.title}>
-                                {limitCharacters(stripHtmlTags(news.titleE), 25)}
-                            </Text>
-                            <Text style={styles.description}>
-                                {limitCharacters(stripHtmlTags(news.descriptionE), 60)}
-                            </Text>
-                        </View>
-                    </View>
+        <View style={styles.wrapper}>
+            <View style={styles.headerContainer}>
+                <Text style={styles.sectionTitle}>Recent News</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('News')}>
+                    <Text style={styles.viewAllText}>View All</Text>
                 </TouchableOpacity>
-            ))}
-        </ScrollView>
+            </View>
+
+            <View style={styles.container}>
+                {newsListing.slice(0, 3).map((news, index) => (
+                    <TouchableOpacity
+                        key={news._id}
+                        activeOpacity={0.8}
+                        onPress={() => handleNewsPress(news._id)}
+                        style={styles.cardWrapper}
+                    >
+                        <View style={styles.card}>
+                            <View style={styles.imageContainer}>
+                                <Image 
+                                    source={{ uri: `${ENV.IMAGE_URL}${news.image}` }} 
+                                    style={styles.image} 
+                                />
+                                <View style={styles.imageOverlay} />
+                            </View>
+                            <View style={styles.textContainer}>
+                                <Text style={styles.title} numberOfLines={2}>
+                                    {stripHtmlTags(news.titleE)}
+                                </Text>
+                                <Text style={styles.description} numberOfLines={2}>
+                                    {stripHtmlTags(news.descriptionE)}
+                                </Text>
+                                <View style={styles.footer}>
+                                    <Text style={styles.readMore}>Read more →</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </TouchableOpacity>
+                ))}
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
+    wrapper: {
         backgroundColor: "#F9F9F9",
+        paddingTop: 20,
     },
-    contentContainer: {
-        padding: 14,
+    loadingContainer: {
+        padding: 40,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    headerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        marginBottom: 16,
+    },
+    sectionTitle: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#1A1A1A',
+    },
+    viewAllText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#4A90E2',
+    },
+    container: {
+        paddingHorizontal: 16,
+    },
+    cardWrapper: {
+        marginBottom: 16,
     },
     card: {
-        flexDirection: 'row',
-        backgroundColor: '#ffffff',
-        borderRadius: 12,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 16,
         overflow: 'hidden',
-        marginBottom: 20,
-        shadowRadius: 6,
-        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 8,
+        elevation: 3,
+    },
+    imageContainer: {
+        position: 'relative',
+        width: '100%',
+        height: 200,
     },
     image: {
-        width: 130,
-        height: 100,
+        width: '100%',
+        height: '100%',
         resizeMode: 'cover',
     },
+    imageOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 60,
+        backgroundColor: 'rgba(0,0,0,0.1)',
+    },
     textContainer: {
-        flex: 1,
-        paddingLeft: 10,
-        paddingTop: 5,
+        padding: 16,
     },
     title: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333333',
-        marginBottom: 6,
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#1A1A1A',
+        marginBottom: 8,
+        lineHeight: 24,
     },
     description: {
         fontSize: 14,
-        color: '#555555',
+        color: '#666666',
         lineHeight: 20,
+        marginBottom: 12,
+    },
+    footer: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+    },
+    readMore: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#4A90E2',
     },
 });
 

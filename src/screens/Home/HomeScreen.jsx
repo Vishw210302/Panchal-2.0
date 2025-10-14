@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import HomeSliderCard from '../../components/home/HomeSliderCard';
 import AllCardsOfPage from './AllCardsOfPage';
 import RecentNewsListing from './RecentNewsListing';
+import RecentEventListing from './RecentEventListing';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
@@ -28,6 +29,7 @@ const HomeScreen = () => {
                 <HomeSliderCard />
                 <AllCardsOfPage />
                 <RecentNewsListing />
+                <RecentEventListing />
             </View>
         </ScrollView>
     );
