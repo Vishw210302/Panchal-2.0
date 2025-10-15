@@ -7,10 +7,12 @@ import { UserProvider } from './src/context/UserContext';
 import { FCMProvider } from './src/services/FCMContext'; 
 import SplashScreen from 'react-native-splash-screen';
 
+
 const App = () => {
   useEffect(() => {
     SplashScreen.hide(); 
   }, []);
+
 
   useEffect(() => {
     requestUserPermission();

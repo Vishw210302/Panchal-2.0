@@ -8,45 +8,89 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
-import HeaderBack from '../../components/common/HeaderBack';
+import { getEvents } from '../../api/user_api';
+import { useEffect, useState } from 'react';
+import ENV from '../../config/env';
+
 
 const EventsScreen = ({ navigation }) => {
+    const [events, setEvents] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const events = [
-        {
-            id: '1',
-            title: 'Annual Cultural Festival',
-            date: '12th Sept, 2025',
-            location: 'Community Hall, City Center',
-            image: 'https://picsum.photos/400/200?random=1',
-        },
-        {
-            id: '2',
-            title: 'Business Networking Meetup',
-            date: '20th Sept, 2025',
-            location: 'Hotel Grand Plaza',
-            image: 'https://picsum.photos/400/200?random=2',
-        },
-        {
-            id: '3',
-            title: 'Charity Blood Donation Camp',
-            date: '5th Oct, 2025',
-            location: 'Red Cross Center',
-            image: 'https://picsum.photos/400/200?random=3',
-        },
-    ];
+    useEffect(() => {
+        fetchEvents();
+    }, []);
 
-    const handleEventScreenPage = () => {
-        navigation.navigate('EventDetailsScreen');
+    const fetchEvents = async () => {
+        try {
+            setLoading(true);
+            const response = await getEvents();
+            console.log('Fetched Events:', response);
+
+            // Transform the API response to match your component structure
+            const formattedEvents = response.map(event => ({
+                id: event._id,
+                title: event.titleE,
+                date: formatDate(event.date, event.time),
+                location: event.location,
+                image: event.image, // You might need to add base URL prefix
+                description: event.descriptionE,
+                createdBy: event.createdBy,
+                createdAt: event.created_at
+            }));
+
+            setEvents(formattedEvents);
+        } catch (error) {
+            console.error('Error fetching events:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Helper function to format date and time
+    const formatDate = (dateString, timeString) => {
+        try {
+            const date = new Date(dateString);
+            const options = { day: 'numeric', month: 'short', year: 'numeric' };
+            const formattedDate = date.toLocaleDateString('en-US', options);
+
+            // Format time if available
+            if (timeString) {
+                const [hours, minutes] = timeString.split(':');
+                const time = new Date();
+                time.setHours(parseInt(hours), parseInt(minutes));
+                const formattedTime = time.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+                return `${formattedDate} • ${formattedTime}`;
+            }
+
+            return formattedDate;
+        } catch (error) {
+            console.error('Error formatting date:', error);
+            return dateString;
+        }
+    };
+
+    const handleEventScreenPage = (event) => {
+        navigation.navigate('EventDetailsScreen', { event });
     };
 
     const renderEventCard = ({ item }) => (
         <TouchableOpacity
-            onPress={handleEventScreenPage}
+            onPress={() => handleEventScreenPage(item)}
             style={styles.card}
             activeOpacity={0.7}
         >
-            <Image source={{ uri: item.image }} style={styles.image} />
+            <Image
+                source={{
+                    uri: ENV.IMAGE_URL + item.image
+                }}
+                style={styles.image}
+                defaultSource={require('../../../assets/images/placeholder.png')} // Add a placeholder
+            />
             <View style={styles.cardContent}>
                 <Text style={styles.title}>{item.title}</Text>
                 <View style={styles.row}>
@@ -57,20 +101,58 @@ const EventsScreen = ({ navigation }) => {
                     <MaterialIcons name="place" size={18} color={COLORS.secondary} />
                     <Text style={styles.detailText}>{item.location}</Text>
                 </View>
+                {item.createdBy && (
+                    <View style={styles.row}>
+                        <MaterialIcons name="person" size={18} color={COLORS.gray} />
+                        <Text style={styles.detailText}>By {item.createdBy}</Text>
+                    </View>
+                )}
             </View>
         </TouchableOpacity>
     );
 
+    const handleBack = () => {
+        navigation?.goBack();
+    };
+
+    const renderEmptyState = () => (
+        <View style={styles.emptyState}>
+            <MaterialIcons name="event-busy" size={64} color={COLORS.gray} />
+            <Text style={styles.emptyStateText}>No events found</Text>
+            <Text style={styles.emptyStateSubText}>
+                {loading ? 'Loading events...' : 'There are no events scheduled at the moment.'}
+            </Text>
+        </View>
+    );
+
     return (
         <View style={styles.container}>
-            <HeaderBack title="Business Directory" navigation={navigation} />
-            <FlatList
-                data={events}
-                keyExtractor={(item) => item.id}
-                renderItem={renderEventCard}
-                contentContainerStyle={styles.listContainer}
-                showsVerticalScrollIndicator={false}
-            />
+            <View style={styles.header}>
+                <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
+                    <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Events</Text>
+            </View>
+
+            {loading && events.length === 0 ? (
+                <View style={styles.loadingContainer}>
+                    <Text>Loading events...</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={events}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderEventCard}
+                    contentContainerStyle={[
+                        styles.listContainer,
+                        events.length === 0 && styles.emptyListContainer
+                    ]}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={renderEmptyState}
+                    refreshing={loading}
+                    onRefresh={fetchEvents}
+                />
+            )}
         </View>
     );
 };
@@ -101,6 +183,10 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         padding: 16,
+    },
+    emptyListContainer: {
+        flexGrow: 1,
+        justifyContent: 'center',
     },
     card: {
         backgroundColor: COLORS.card,
@@ -135,6 +221,29 @@ const styles = StyleSheet.create({
         marginLeft: 6,
         fontSize: 14,
         color: COLORS.gray,
+    },
+    emptyState: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 60,
+    },
+    emptyStateText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: COLORS.darkGray,
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    emptyStateSubText: {
+        fontSize: 14,
+        color: COLORS.gray,
+        textAlign: 'center',
+        paddingHorizontal: 40,
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
 

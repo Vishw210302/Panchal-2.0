@@ -23,6 +23,14 @@ import AddFamilyMember from '../screens/Settings/AddFamilyMember';
 import OwnBussiness from '../screens/Settings/OwnBussiness';
 import BussinesRequest from '../screens/Settings/BussinesRequest';
 import Onboarding from '../screens/Onboarding/Onboarding';
+import EditFamilyMember from '../screens/Settings/EditFamilyMember';
+import TermsAndConditions from '../screens/Terms/TermAndCondition';
+import NotificationsScreen from '../screens/Notification/NotificationsScreen';
+import EditProfile from '../screens/Profile/EditProfileScreen';
+import AddEvent from '../screens/Events/AddEvent';
+import MyEvents from '../screens/Events/MyEvents';
+import MembershipScreen from '../screens/Membership/MembershipScreen';
+import MemberDetailsScreen from '../screens/Settings/FamilyDetails';
 
 const Stack = createNativeStackNavigator();
 const StackNavigator = () => {
@@ -143,6 +151,46 @@ const StackNavigator = () => {
         name="Onboarding"
         component={Onboarding}
         options={{ headerShown: false, title: 'Onboarding' }}
+      />
+      <Stack.Screen
+        name="EditFamilyMember"
+        component={EditFamilyMember}
+        options={{ headerShown: false, title: 'EditFamilyMember' }}
+      />
+      <Stack.Screen
+        name="TermsAndConditions"
+        component={TermsAndConditions}
+        options={{ headerShown: false, title: 'TermsAndConditions' }}
+      />
+      <Stack.Screen
+        name="NotificationsScreen"
+        component={NotificationsScreen}
+        options={{ headerShown: false, title: 'NotificationsScreen' }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
+        options={{ headerShown: false, title: 'EditProfile' }}
+      />
+      <Stack.Screen
+        name="AddEvent"
+        component={AddEvent}
+        options={{ headerShown: false, title: 'AddEvent' }}
+      />
+      <Stack.Screen
+        name="MyEvents"
+        component={MyEvents}
+        options={{ headerShown: false, title: 'MyEvents' }}
+      />
+      <Stack.Screen
+        name="MembershipScreen"
+        component={MembershipScreen}
+        options={{ headerShown: false, title: 'MembershipScreen' }}
+      />
+      <Stack.Screen
+        name="MemberDetailsScreen"
+        component={MemberDetailsScreen}
+        options={{ headerShown: false, title: 'MemberDetailsScreen' }}
       />
     </Stack.Navigator>
   );

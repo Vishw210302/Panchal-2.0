@@ -11,7 +11,8 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    ActivityIndicator
+    ActivityIndicator,
+    StatusBar
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -19,6 +20,8 @@ import RazorpayCheckout from 'react-native-razorpay';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { postOrderCreate, verifyPayment, createBusiness, getSubscriptions } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 
 const BussinesRequest = ({ navigation }) => {
     const [memberId, setMemberId] = useState('');
@@ -151,8 +154,8 @@ const BussinesRequest = ({ navigation }) => {
                 payment_id: paymentData.razorpay_payment_id,
                 signature: paymentData.razorpay_signature,
                 registration_data: {
-                    first_name: user.member.firstname, 
-                    last_name: user.member.lastname, 
+                    first_name: user.member.firstname,
+                    last_name: user.member.lastname,
                     email: user.member.email
                 },
                 forReason: 'subscription',
@@ -318,14 +321,18 @@ const BussinesRequest = ({ navigation }) => {
             style={styles.container}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
             <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-                {/* Header */}
+
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <MaterialIcons name="arrow-back" size={24} color="#333" />
+                    <TouchableOpacity
+                        onPress={() => navigation.goBack()}
+                        style={styles.backButton}
+                    >
+                        <Icon name="arrow-back" size={24} color={COLORS.white} />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Add New Business</Text>
-                    <View style={{ width: 24 }} />
+                    <View style={styles.placeholder} />
                 </View>
 
                 <ScrollView
@@ -516,19 +523,29 @@ const styles = StyleSheet.create({
         backgroundColor: '#f5f5f5',
     },
     header: {
+        backgroundColor: COLORS.primary,
+        paddingTop: StatusBar.currentHeight || 40,
+        paddingBottom: 20,
+        paddingHorizontal: 20,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        backgroundColor: '#fff',
-        paddingHorizontal: 16,
-        paddingVertical: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    backButton: {
+        padding: 8,
     },
     headerTitle: {
         fontSize: 20,
-        fontWeight: '600',
-        color: '#333',
+        fontWeight: 'bold',
+        color: COLORS.white,
+    },
+    placeholder: {
+        width: 40,
     },
     content: {
         flex: 1,

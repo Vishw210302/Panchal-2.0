@@ -57,9 +57,9 @@ const RegisterScreen = ({ route }) => {
   console.log(fcmToken)
 // const fcmToken ='sasasasas'
   const genderOptions = [
-    { label: 'Male', value: 'male' },
-    { label: 'Female', value: 'female' },
-    { label: 'Other', value: 'other' },
+    { label: 'Male', value: 'Male' },
+    { label: 'Female', value: 'Female' },
+    { label: 'Other', value: 'Other' },
   ];
 
   const educationOptions = [

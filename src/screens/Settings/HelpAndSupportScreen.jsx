@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Alert,
     Animated,
@@ -13,38 +13,21 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
 import FAQsPageListing from './FAQsPageListing';
+import { getSettings } from '../../api/user_api';
 
 const HelpAndSupportScreen = () => {
-
     const navigation = useNavigation();
     const scrollY = useRef(new Animated.Value(0)).current;
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(50)).current;
 
-    const contactMethods = [
-        {
-            id: 1,
-            title: "Call Support",
-            subtitle: "24/7 Available",
-            detail: "+91 9876543210",
-            icon: "phone",
-            color: COLORS.primary,
-            action: openDialer,
-            description: "Get instant help from our support team"
-        },
-        {
-            id: 2,
-            title: "Email Support",
-            subtitle: "Response in 2-4 hours",
-            detail: "support@panchalsamaj.com",
-            icon: "email",
-            color: COLORS.secondary,
-            action: openEmail,
-            description: "Send us detailed queries via email"
-        },
-    ];
+    // ✅ State for dynamic email and phone
+    const [supportEmail, setSupportEmail] = useState('');
+    const [supportPhone, setSupportPhone] = useState('');
 
     useEffect(() => {
+        fetchSupportDetails();
+
         Animated.parallel([
             Animated.timing(fadeAnim, {
                 toValue: 1,
@@ -58,27 +41,53 @@ const HelpAndSupportScreen = () => {
                 useNativeDriver: true,
             })
         ]).start();
-    }, [fadeAnim, slideAnim]);
+    }, []);
+
+    // ✅ Fetch from API properly
+    const fetchSupportDetails = async () => {
+        try {
+            const email = await getSettings('support_email');
+            const phone = await getSettings('support_phone');
+            console.log(email[0].value, 'Settings fetched');
+            console.log(phone[0].value, 'Settings fetched');
+            setSupportEmail(email[0].value || 'support@panchalsamaj.com');
+            setSupportPhone(phone[0].value || '+919876543210');
+        } catch (error) {
+            console.error('Error fetching settings:', error);
+            setSupportEmail('support@panchalsamaj.com');
+            setSupportPhone('+919876543210');
+        }
+    };
 
     const handleBack = () => {
         navigation?.goBack();
     };
 
     function openDialer() {
+        if (!supportPhone) {
+            Alert.alert('Error', 'Support phone number not available.');
+            return;
+        }
+
         Alert.alert(
             "Call Support",
-            "Do you want to call our support team?",
+            `Do you want to call our support team at ${supportPhone}?`,
             [
                 { text: "Cancel", style: "cancel" },
-                { text: "Call", onPress: () => Linking.openURL('tel:+919876543210') }
+                { text: "Call", onPress: () => Linking.openURL(`tel:${supportPhone}`) }
             ]
         );
     }
 
     function openEmail() {
+        if (!supportEmail) {
+            Alert.alert('Error', 'Support email not available.');
+            return;
+        }
+
         const subject = "Support Request - Panchal Samaj App";
         const body = "Hi Support Team,\n\nI need help with:\n\n";
-        Linking.openURL(`mailto:support@panchalsamaj.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
+        Linking.openURL(`mailto:${supportEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`);
     }
 
     const headerBackgroundColor = scrollY.interpolate({
@@ -86,6 +95,29 @@ const HelpAndSupportScreen = () => {
         outputRange: [COLORS.primary, `${COLORS.primary}CC`],
         extrapolate: 'clamp',
     });
+
+    const contactMethods = [
+        {
+            id: 1,
+            title: "Call Support",
+            subtitle: "24/7 Available",
+            detail: supportPhone || 'Loading...',
+            icon: "phone",
+            color: COLORS.primary,
+            action: openDialer,
+            description: "Get instant help from our support team"
+        },
+        {
+            id: 2,
+            title: "Email Support",
+            subtitle: "Response in 2-4 hours",
+            detail: supportEmail || 'Loading...',
+            icon: "email",
+            color: COLORS.secondary,
+            action: openEmail,
+            description: "Send us detailed queries via email"
+        },
+    ];
 
     const renderContactCard = (contact, index) => (
         <Animated.View

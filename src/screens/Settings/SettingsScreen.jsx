@@ -4,6 +4,7 @@ import {
     Alert,
     ScrollView,
     Share,
+    StatusBar,
     StyleSheet,
     Switch,
     Text,
@@ -31,27 +32,25 @@ const SettingsScreen = () => {
     const navigation = useNavigation();
 
     const handleProfilePress = () => {
-        Alert.alert('Profile', 'Navigate to profile editing screen');
+
+        navigation.navigate('EditProfile');
+        // Alert.alert('Profile', 'Navigate to profile editing screen');
     };
 
     const handleLanguagePress = () => {
         Alert.alert('Language', 'Available: English, Gujarati, Hindi');
     };
     const handleViewFamilyPress = () => {
-         navigation.navigate('ViewFamilyList');
+        navigation.navigate('ViewFamilyList');
         // Alert.alert('Language', 'Available: English, Gujarati, Hindi');
     };
 
     const handlePrivacyPress = () => {
-        //  navigation.navigate('BussinesRequest');
-         navigation.navigate('OwnBussiness');
+        navigation.navigate('OwnBussiness');
     };
 
     const handleTermsPress = () => {
-        
-         navigation.navigate('Onboarding');
-
-        // Alert.alert('Terms & Conditions', 'View terms of service');
+        navigation.navigate('TermsAndConditions');
     };
 
     const handleShareApp = async () => {
@@ -75,13 +74,15 @@ const SettingsScreen = () => {
             'Are you sure you want to logout?',
             [
                 { text: 'Cancel', style: 'cancel' },
-                { text: 'Logout', style: 'destructive', onPress: () => {
-                    AsyncStorage.removeItem('userData')
-                    navigation.reset({
-                        index: 0,
-                        routes: [{ name: 'Login' }],
-                    });
-                } },
+                {
+                    text: 'Logout', style: 'destructive', onPress: () => {
+                        AsyncStorage.removeItem('userData')
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Login' }],
+                        });
+                    }
+                },
             ]
         );
 
@@ -150,6 +151,8 @@ const SettingsScreen = () => {
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+
             <View style={styles.header}>
                 <TouchableOpacity
                     activeOpacity={0.7}
@@ -182,7 +185,7 @@ const SettingsScreen = () => {
                     icon="card-outline"
                     title="Membership"
                     subtitle="Upgrade to Premium"
-                    onPress={() => Alert.alert('Membership', 'Upgrade to premium membership')}
+                    onPress={() => navigation.navigate('MembershipScreen')}
                 />
             </SettingsSection>
 
@@ -316,7 +319,7 @@ const SettingsScreen = () => {
                     icon="calendar-outline"
                     title="My Events"
                     subtitle="Events you're attending"
-                    onPress={() => Alert.alert('My Events', 'View your events')}
+                    onPress={() => navigation.navigate('MyEvents')}
                 />
                 <SettingsItem
                     icon="chatbubbles-outline"
@@ -328,7 +331,7 @@ const SettingsScreen = () => {
                     icon="business-outline"
                     title="Business Directory"
                     subtitle="Find Panchal community businesses"
-                    onPress={() => Alert.alert('Business Directory', 'Browse businesses')}
+                    onPress={() => navigation.navigate('BusinessScreen')}
                 />
             </SettingsSection>
 
@@ -351,12 +354,7 @@ const SettingsScreen = () => {
                     subtitle="Read our terms of service"
                     onPress={handleTermsPress}
                 />
-                <SettingsItem
-                    icon="shield-outline"
-                    title="Privacy Policy"
-                    subtitle="Learn about data privacy"
-                    onPress={handlePrivacyPress}
-                />
+
             </SettingsSection>
 
             <View style={styles.logoutSection}>
