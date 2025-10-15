@@ -31,3 +31,4 @@ export const getEventDetails = (id) => axiosClient.get(`/editEvent/${id}`);
 export const getSettings = (key) => axiosClient.get(`/settings?key=${key}`);
 export const createEvent = (payload) => axiosClient.post('/createEvent', payload, { headers: { 'Content-Type': 'multipart/form-data' } });
 export const getMyEvents = (id) => axiosClient.get(`/events`);
+export const getMemberDetails = (id) => axiosClient.get(`/memberDetails/${id}`);

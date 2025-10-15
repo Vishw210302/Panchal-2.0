@@ -28,8 +28,8 @@ const HomeScreen = () => {
             <View style={styles.container}>
                 <HomeSliderCard />
                 <AllCardsOfPage />
-                <RecentNewsListing />
                 <RecentEventListing />
+                <RecentNewsListing />
             </View>
         </ScrollView>
     );

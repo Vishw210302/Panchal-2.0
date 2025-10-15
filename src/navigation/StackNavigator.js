@@ -29,6 +29,8 @@ import NotificationsScreen from '../screens/Notification/NotificationsScreen';
 import EditProfile from '../screens/Profile/EditProfileScreen';
 import AddEvent from '../screens/Events/AddEvent';
 import MyEvents from '../screens/Events/MyEvents';
+import MembershipScreen from '../screens/Membership/MembershipScreen';
+import MemberDetailsScreen from '../screens/Settings/FamilyDetails';
 
 const Stack = createNativeStackNavigator();
 
@@ -180,6 +182,16 @@ const StackNavigator = () => {
                 name="MyEvents"
                 component={MyEvents}
                 options={{ headerShown: false, title: 'MyEvents' }}
+            />
+            <Stack.Screen
+                name="MembershipScreen"
+                component={MembershipScreen}
+                options={{ headerShown: false, title: 'MembershipScreen' }}
+            />
+            <Stack.Screen
+                name="MemberDetailsScreen"
+                component={MemberDetailsScreen}
+                options={{ headerShown: false, title: 'MemberDetailsScreen' }}
             />
         </Stack.Navigator>
     );

@@ -168,18 +168,19 @@ const ViewFamilyList = () => {
     };
 
     const handleViewDetails = (member) => {
-        Alert.alert(
-            member.name,
-            `Relationship: ${member.relationship}\n` +
-            `Age: ${member.age} years\n` +
-            `Gender: ${member.gender}\n` +
-            `Phone: ${member.phone}\n` +
-            `Email: ${member.email}\n` +
-            `Job: ${member.job}\n` +
-            `Marital Status: ${member.marital_status || '-'}\n` +
-            `Address: ${member.address}`,
-            [{ text: 'Close' }]
-        );
+        navigation.navigate('MemberDetailsScreen', { userId: member.id });
+        // Alert.alert(
+        //     member.name,
+        //     `Relationship: ${member.relationship}\n` +
+        //     `Age: ${member.age} years\n` +
+        //     `Gender: ${member.gender}\n` +
+        //     `Phone: ${member.phone}\n` +
+        //     `Email: ${member.email}\n` +
+        //     `Job: ${member.job}\n` +
+        //     `Marital Status: ${member.marital_status || '-'}\n` +
+        //     `Address: ${member.address}`,
+        //     [{ text: 'Close' }]
+        // );
     };
 
     const getRelationshipIcon = (relationship) => {

@@ -182,7 +182,7 @@ const SettingsScreen = () => {
                     icon="card-outline"
                     title="Membership"
                     subtitle="Upgrade to Premium"
-                    onPress={() => Alert.alert('Membership', 'Upgrade to premium membership')}
+                    onPress={() => navigation.navigate('MembershipScreen')}
                 />
             </SettingsSection>
 
