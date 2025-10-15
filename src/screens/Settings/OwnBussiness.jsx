@@ -5,6 +5,7 @@ import {
     Image,
     Platform,
     RefreshControl,
+    StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -17,7 +18,7 @@ import { COLORS } from '../../styles/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ENV from '../../config/env';
 
- const IMAGE_URL = ENV.IMAGE_URL;
+const IMAGE_URL = ENV.IMAGE_URL;
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -289,6 +290,8 @@ const OwnBussiness = ({ navigation }) => {
     return (
         <View style={styles.container}>
             {/* Header */}
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+
             <View style={styles.header}>
                 <View>
                     <Text style={styles.headerTitle}>My Businesses</Text>

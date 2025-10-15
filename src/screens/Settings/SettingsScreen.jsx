@@ -4,6 +4,7 @@ import {
     Alert,
     ScrollView,
     Share,
+    StatusBar,
     StyleSheet,
     Switch,
     Text,
@@ -150,6 +151,8 @@ const SettingsScreen = () => {
 
     return (
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+
             <View style={styles.header}>
                 <TouchableOpacity
                     activeOpacity={0.7}

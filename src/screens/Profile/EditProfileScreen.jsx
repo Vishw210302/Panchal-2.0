@@ -80,8 +80,8 @@ const EditProfile = () => {
     ];
 
     useEffect(() => {
-        loadUserData();
         loadVillages();
+        loadUserData();
     }, []);
 
     const loadUserData = async () => {
@@ -108,6 +108,14 @@ const EditProfile = () => {
                 const genderLabel = genderOptions.find(g => g.value === userData.gender)?.label || userData.gender;
                 const educationLabel = educationOptions.find(e => e.value === userData.education)?.label || userData.education;
                 const maritalLabel = maritalStatusOptions.find(m => m.value === userData.marital_status)?.label || userData.marital_status;
+                const userVillageId =
+                    typeof userData.locations_id === "object"
+                        ? userData.locations_id._id
+                        : userData.locations_id;
+                const selectedVillage = villageOptions.find(
+                    (v) => String(v.value) === String(userVillageId)
+                );
+
 
                 setFormData({
                     firstname: { value: userData.firstname || '', label: 'First Name' },
@@ -126,8 +134,10 @@ const EditProfile = () => {
                     job: { value: userData.job || '', label: 'Job' },
                     state: { value: userData.state || '', label: 'State' },
                     city: { value: userData.city || '', label: 'City' },
-                    village: { value: userData.locations_id || '', label: userData.locations_id || '' },
-                    pincode: { value: userData.pincode || '', label: 'Pincode' },
+                    village: {
+                        value: userData.locations_id || '',
+                        label: selectedVillage ? selectedVillage.label : 'Select Village',
+                    }, pincode: { value: userData.pincode || '', label: 'Pincode' },
                     marital_status: { value: userData.marital_status || '', label: maritalLabel },
                     address: { value: userData.address || '', label: 'Address' },
                 });
@@ -646,7 +656,7 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: COLORS.primary,
         paddingBottom: 24,
-        height: 140,
+        height: 100,
         shadowColor: COLORS.black,
         shadowOffset: {
             width: 0,
