@@ -16,7 +16,6 @@ import ENV from '../../config/env';
 import HeaderBack from '../../components/common/HeaderBack';
 
 const BusinessScreen = ({ navigation }) => {
-
     const [businessListing, setBusinessListing] = useState([]);
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
@@ -26,6 +25,7 @@ const BusinessScreen = ({ navigation }) => {
         try {
             setError(null);
             const res = await getBusinesListing();
+            console.log(res, 'business data');
             if (Array.isArray(res)) {
                 setBusinessListing(res);
             } else if (res && res.data && Array.isArray(res.data)) {
@@ -68,96 +68,59 @@ const BusinessScreen = ({ navigation }) => {
         return null;
     }, []);
 
-    const formatPrice = useCallback((price) => {
-        if (typeof price === 'number') {
-            return `₹${price.toLocaleString()}`;
+    const getOwnerName = useCallback((memberId) => {
+        if (memberId && typeof memberId === 'object') {
+            const firstName = memberId.firstname || '';
+            const lastName = memberId.lastname || '';
+            return `${firstName} ${lastName}`.trim() || 'Unknown Owner';
         }
-        return price ? `₹${price}` : 'Price not available';
+        return 'Unknown Owner';
     }, []);
 
     const renderBusinessCard = useCallback(({ item }) => {
         const imageSource = getImageSource(item.images);
+        const ownerName = getOwnerName(item.memberId);
 
         return (
             <TouchableOpacity
                 style={styles.card}
-                activeOpacity={0.8}
+                activeOpacity={0.7}
                 onPress={() => handleBusinessDetailsPage(item)}
             >
                 {imageSource ? (
                     <Image
                         source={imageSource}
                         style={styles.image}
+                        resizeMode="cover"
                     />
                 ) : (
                     <View style={[styles.image, styles.placeholderImage]}>
-                        <MaterialIcons name="business" size={50} color={COLORS.gray} />
+                        <MaterialIcons name="business" size={60} color={COLORS.gray} />
                     </View>
                 )}
+
                 <View style={styles.cardContent}>
-                    <Text style={styles.title} numberOfLines={2}>
+                    <Text style={styles.businessName} numberOfLines={2}>
                         {item.businessName || 'Unnamed Business'}
                     </Text>
 
-                    {item.category && (
-                        <View style={styles.row}>
-                            <MaterialIcons name="category" size={18} color={COLORS.primary} />
-                            <Text style={styles.detailText}>{item.category}</Text>
-                        </View>
-                    )}
+                    <View style={styles.infoRow}>
+                        <MaterialIcons name="category" size={18} color={COLORS.primary} />
+                        <Text style={styles.infoText} numberOfLines={1}>
+                            {item.category || 'Uncategorized'}
+                        </Text>
+                    </View>
 
-                    {item.description && (
-                        <View style={styles.row}>
-                            <MaterialIcons name="info" size={18} color={COLORS.secondary} />
-                            <Text style={styles.detailText} numberOfLines={2}>
-                                {item.description.replace(/<[^>]*>/g, '').trim() || 'No description'}
-                            </Text>
-                        </View>
-                    )}
-
-                    {item.package && item.price && (
-                        <View style={styles.row}>
-                            <MaterialIcons name="local-offer" size={18} color={COLORS.accent} />
-                            <Text style={styles.detailText}>
-                                {item.package} - {formatPrice(item.price)}
-                            </Text>
-                        </View>
-                    )}
-
-                    {item.status && (
-                        <View style={styles.row}>
-                            <MaterialIcons
-                                name={item.status === 'approved' ? "check-circle" :
-                                    item.status === 'pending' ? "pending" :
-                                        item.status === 'rejected' ? "cancel" : "help"}
-                                size={18}
-                                color={item.status === 'approved' ? '#4CAF50' :
-                                    item.status === 'pending' ? '#FF9800' :
-                                        item.status === 'rejected' ? '#F44336' : COLORS.gray}
-                            />
-                            <Text style={[styles.detailText, {
-                                color: item.status === 'approved' ? '#4CAF50' :
-                                    item.status === 'pending' ? '#FF9800' :
-                                        item.status === 'rejected' ? '#F44336' : COLORS.gray,
-                                textTransform: 'capitalize'
-                            }]}>
-                                {item.status}
-                            </Text>
-                        </View>
-                    )}
-
-                    {item.subscriptionEnd && (
-                        <View style={styles.row}>
-                            <MaterialIcons name="schedule" size={18} color={COLORS.gray} />
-                            <Text style={[styles.detailText, styles.subscriptionText]}>
-                                Expires: {new Date(item.subscriptionEnd).toLocaleDateString()}
-                            </Text>
-                        </View>
-                    )}
+                    <View style={styles.infoRow}>
+                        <MaterialIcons name="person" size={18} color={COLORS.secondary} />
+                        <Text style={styles.infoText} numberOfLines={1}>
+                            {ownerName}
+                        </Text>
+                    </View>
                 </View>
             </TouchableOpacity>
         );
-    }, [getImageSource, handleBusinessDetailsPage, formatPrice]);
+    }, [getImageSource, getOwnerName, handleBusinessDetailsPage]);
 
     const keyExtractor = useCallback((item) => item._id || item.id || Math.random().toString(), []);
 
@@ -168,14 +131,18 @@ const BusinessScreen = ({ navigation }) => {
             <View style={styles.emptyContainer}>
                 <MaterialIcons
                     name={error ? "error" : "business"}
-                    size={60}
+                    size={70}
                     color={error ? COLORS.error || '#F44336' : COLORS.gray}
                 />
                 <Text style={styles.emptyText}>
                     {error ? 'Failed to load businesses' : 'No businesses found'}
                 </Text>
+                <Text style={styles.emptySubText}>
+                    {error ? 'Please check your connection and try again' : 'Check back later for new listings'}
+                </Text>
                 {error && (
                     <TouchableOpacity style={styles.retryButton} onPress={fetchBusinessListing}>
+                        <MaterialIcons name="refresh" size={20} color={COLORS.white} />
                         <Text style={styles.retryButtonText}>Retry</Text>
                     </TouchableOpacity>
                 )}
@@ -184,7 +151,7 @@ const BusinessScreen = ({ navigation }) => {
     }, [loading, error, fetchBusinessListing]);
 
     const renderFooter = useCallback(() => {
-        if (businessListing.length > 10) {
+        if (businessListing.length > 0) {
             return <View style={styles.footerSpacing} />;
         }
         return null;
@@ -227,10 +194,7 @@ const BusinessScreen = ({ navigation }) => {
                 removeClippedSubviews={true}
                 maxToRenderPerBatch={10}
                 windowSize={10}
-                initialNumToRender={5}
-                getItemLayout={(data, index) => (
-                    { length: 200, offset: 200 * index, index }
-                )}
+                initialNumToRender={6}
             />
         </View>
     );
@@ -243,24 +207,22 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'flex-start',
         alignItems: 'flex-end',
         height: 100,
-        gap: 15,
         paddingHorizontal: 20,
         paddingVertical: 15,
         backgroundColor: COLORS.primary,
-        elevation: 2,
-        shadowColor: '#000',
+        elevation: 3,
+        shadowColor: COLORS.black,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.15,
         shadowRadius: 4,
     },
     headerTitle: {
-        fontSize: 21,
-        fontWeight: '600',
-        color: '#fff',
-        flex: 1,
+        fontSize: 22,
+        fontWeight: '700',
+        color: COLORS.white,
+        marginLeft: 12,
     },
     loadingContainer: {
         flex: 1,
@@ -268,7 +230,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     loadingText: {
-        marginTop: 10,
+        marginTop: 12,
         fontSize: 16,
         color: COLORS.gray,
     },
@@ -280,78 +242,84 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: COLORS.card,
-        borderRadius: 12,
+        borderRadius: 14,
         marginBottom: 16,
         shadowColor: COLORS.black,
         shadowOpacity: 0.1,
-        shadowRadius: 6,
+        shadowRadius: 8,
         shadowOffset: { width: 0, height: 3 },
-        elevation: 3,
+        elevation: 4,
         overflow: 'hidden',
     },
     image: {
         width: '100%',
-        height: 160,
-        resizeMode: 'cover',
+        height: 200,
+        backgroundColor: COLORS.lightGray || '#f0f0f0',
     },
     placeholderImage: {
-        backgroundColor: COLORS.lightGray || '#f5f5f5',
         justifyContent: 'center',
         alignItems: 'center',
     },
     cardContent: {
-        padding: 12,
+        padding: 16,
     },
-    title: {
-        fontSize: 18,
-        fontWeight: '600',
+    businessName: {
+        fontSize: 19,
+        fontWeight: '700',
         color: COLORS.darkGray,
-        marginBottom: 8,
-        lineHeight: 22,
+        marginBottom: 12,
+        lineHeight: 24,
     },
-    row: {
+    infoRow: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
-        marginBottom: 6,
-        minHeight: 20,
+        alignItems: 'center',
+        marginBottom: 8,
     },
-    detailText: {
-        marginLeft: 8,
-        fontSize: 14,
+    infoText: {
+        marginLeft: 10,
+        fontSize: 15,
         color: COLORS.gray,
         flex: 1,
-        lineHeight: 18,
-    },
-    subscriptionText: {
-        fontSize: 12,
-        fontStyle: 'italic',
+        fontWeight: '500',
     },
     emptyContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingHorizontal: 40,
         paddingTop: 100,
     },
     emptyText: {
-        fontSize: 16,
-        color: COLORS.gray,
-        marginTop: 10,
+        fontSize: 18,
+        fontWeight: '600',
+        color: COLORS.darkGray,
+        marginTop: 16,
         textAlign: 'center',
     },
+    emptySubText: {
+        fontSize: 14,
+        color: COLORS.gray,
+        marginTop: 8,
+        textAlign: 'center',
+        lineHeight: 20,
+    },
     retryButton: {
-        marginTop: 20,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginTop: 24,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
         backgroundColor: COLORS.primary,
-        borderRadius: 8,
+        borderRadius: 10,
     },
     retryButtonText: {
-        color: '#fff',
+        color: COLORS.white,
         fontSize: 16,
         fontWeight: '600',
     },
     footerSpacing: {
-        height: 20,
+        height: 16,
     },
 });
 

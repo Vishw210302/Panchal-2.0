@@ -31,6 +31,7 @@ import AddEvent from '../screens/Events/AddEvent';
 import MyEvents from '../screens/Events/MyEvents';
 import MembershipScreen from '../screens/Membership/MembershipScreen';
 import MemberDetailsScreen from '../screens/Settings/FamilyDetails';
+import GallaryScreen from '../screens/Gallary/GallaryScreen';
 
 const Stack = createNativeStackNavigator();
 const StackNavigator = () => {
@@ -191,6 +192,11 @@ const StackNavigator = () => {
         name="MemberDetailsScreen"
         component={MemberDetailsScreen}
         options={{ headerShown: false, title: 'MemberDetailsScreen' }}
+      />
+      <Stack.Screen
+        name="GallaryScreen"
+        component={GallaryScreen}
+        options={{ headerShown: false, title: 'GallaryScreen' }}
       />
     </Stack.Navigator>
   );
