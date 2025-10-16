@@ -39,7 +39,7 @@ const BussinesRequest = ({ navigation }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSubscriptions, setIsLoadingSubscriptions] = useState(true);
     const { userData } = useUser()
-    
+
     const fadeAnim = useRef(new Animated.Value(0)).current;
     useEffect(() => {
         initializeData();
@@ -53,9 +53,8 @@ const BussinesRequest = ({ navigation }) => {
     const initializeData = async () => {
         try {
             // Get user data
-            const parsedData = JSON.parse(userData);
-            setUser(parsedData);
-            const userId = parsedData.member._id;
+            setUser(userData);
+            const userId = userData._id;
             setMemberId(userId);
 
             // Fetch subscriptions

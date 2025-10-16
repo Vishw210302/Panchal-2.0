@@ -117,8 +117,7 @@ const AddEvent = ({navigation}) => {
 
         try {
             setLoading(true);
-            const parsedUserData = JSON.parse(userData);
-            const createdBy = `${parsedUserData.firstname} ${parsedUserData.lastname}`;
+            const createdBy = `${userData.firstname} ${userData.lastname}`;
 
             // Prepare form data for multipart/form-data
             const eventFormData = new FormData();

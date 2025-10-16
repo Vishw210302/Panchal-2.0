@@ -19,7 +19,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { getVillagesListing, getPerents, updateMember, editMember } from '../../api/user_api';
-import { FCMContext } from '../../services/FCMContext';
+// import { FCMContext } from '../../services/FCMContext';
 import { COLORS } from '../../styles/colors';
 import { useUser } from '../../context/UserContext';
 
@@ -62,7 +62,7 @@ const EditFamilyMember = ({ route }) => {
     const [isLoading, setIsLoading] = useState(true);
     const totalSteps = 4;
     const navigation = useNavigation();
-    const { fcmToken } = useContext(FCMContext);
+    // const { fcmToken } = useContext(FCMContext);
     const { userData } = useUser()
 
     console.log(formData, "Form Data...");
@@ -141,9 +141,7 @@ const EditFamilyMember = ({ route }) => {
         const fetchUserData = async () => {
             try {
                 if (userData) {
-                    const parsedUserData = JSON.parse(userData);
-
-                    const res = await getPerents(parsedUserData.member._id);
+                    const res = await getPerents(userData._id);
                     setperentData(res);
 
                     if (res && Array.isArray(res)) {

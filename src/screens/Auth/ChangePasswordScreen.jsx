@@ -51,7 +51,6 @@ const ChangePasswordScreen = () => {
         try {
             setIsLoading(true);
             if (userData) {
-                // const parsedUserData = JSON.parse(userData);
                 setMemberId(userData._id);
             } else {
                 setErrorMessage('Unable to load user data. Please login again.');

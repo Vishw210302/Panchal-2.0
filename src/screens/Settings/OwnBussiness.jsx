@@ -30,7 +30,7 @@ const OwnBussiness = ({ navigation }) => {
     const [refreshing, setRefreshing] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const { userData } = useUser()
-    
+
     useEffect(() => {
         fetchBusinesses();
     }, []);
@@ -38,9 +38,7 @@ const OwnBussiness = ({ navigation }) => {
     const fetchBusinesses = async () => {
         setLoading(true);
         try {
-            const parsedUserData = JSON.parse(userData);
-
-            const res = await getBussinessListing(parsedUserData.member._id);
+            const res = await getBussinessListing(userData._id);
             console.log(res, 'Business Listing fetched');
             setBussinesListing(res);
             setLoading(false);

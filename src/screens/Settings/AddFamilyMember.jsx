@@ -133,9 +133,9 @@ const AddFamilyMember = ({ navigation }) => {
         const fetchUserData = async () => {
             try {
                 if (userData) {
-                    const parsedUserData = JSON.parse(userData);
+                    
 
-                    const res = await getPerents(parsedUserData._id);
+                    const res = await getPerents(userData._id);
                     setperentData(res);
 
                     // Transform parent data for dropdown
