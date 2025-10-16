@@ -1,6 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation } from '@react-navigation/native';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Alert,
     FlatList,
@@ -20,10 +20,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { getVillagesListing, getPerents, createFamilyMember } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from '../../context/UserContext';
 
-const AddFamilyMember = ({ route }) => {
-
+const AddFamilyMember = ({ navigation }) => {
     const [formData, setFormData] = useState({
         firstname: { value: '', label: '' },
         middlename: { value: '', label: '' },
@@ -58,8 +57,8 @@ const AddFamilyMember = ({ route }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectedImage, setSelectedImage] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { userData } = useUser()
     const totalSteps = 4;
-    const navigation = useNavigation();
 
     const genderOptions = [
         { label: 'Male', value: 'Male' },
@@ -133,11 +132,10 @@ const AddFamilyMember = ({ route }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const userData = await AsyncStorage.getItem('userData');
                 if (userData) {
                     const parsedUserData = JSON.parse(userData);
 
-                    const res = await getPerents(parsedUserData.member._id);
+                    const res = await getPerents(parsedUserData._id);
                     setperentData(res);
 
                     // Transform parent data for dropdown

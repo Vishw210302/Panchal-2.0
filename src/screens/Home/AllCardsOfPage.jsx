@@ -19,6 +19,7 @@ const AllCardsOfPage = () => {
   const { userData } = useUser();
   const navigation = useNavigation();
 
+  const [pressed, setPressed] = useState({})
   const [cardData, setCardData] = useState([
     {
       id: 1,
@@ -59,7 +60,8 @@ const AllCardsOfPage = () => {
 
   useEffect(() => {
     if (!userData) {
-      setCardData(prevCards => [
+      let isLogin = cardData.find(item => item.id == 6)
+      if (!isLogin) setCardData(prevCards => [
         ...prevCards,
         {
           id: 6,
@@ -77,14 +79,19 @@ const AllCardsOfPage = () => {
   };
 
   const renderCard = item => {
+    if (pressed[item.id]) {
+      console.log("Clicked", item.id, " : ", pressed[item.id])
+    }
     return (
       <TouchableOpacity
         key={item.id}
         style={styles.card}
+        onPressIn={() => setPressed(prev => ({ ...prev, [item.id]: true }))}
+        onPressOut={() => setPressed(prev => ({ ...prev, [item.id]: false }))}
         onPress={() => handleCardPress(item)}
-        activeOpacity={0.8}
+        activeOpacity={1}
       >
-        <View style={styles.cardBackground}>
+        <View style={[styles.cardBackground, pressed[item.id] ? styles.cardBackgroundHover : {}]}>
           <View style={[styles.iconContainer, { backgroundColor: item.color }]}>
             <Icon name={item.iconName} size={26} color={COLORS.white} />
           </View>
@@ -151,7 +158,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 15,
-    paddingBottom: 30,
+    paddingBottom: 0,
   },
   cardRow: {
     flexDirection: 'row',
@@ -174,11 +181,16 @@ const styles = StyleSheet.create({
       width: 0,
       height: 3,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 2,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  cardBackgroundHover: {
+    elevation: 6,
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
   iconContainer: {
     width: 48,

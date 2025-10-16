@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import {
     Image,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -10,7 +9,9 @@ import {
     ActivityIndicator
 } from 'react-native';
 import { getNewsListing } from '../../api/user_api';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ENV from '../../config/env';
+import { COLORS } from '../../styles/colors';
 
 const RecentNewsListing = () => {
     const navigation = useNavigation();
@@ -91,7 +92,8 @@ const RecentNewsListing = () => {
                                     {stripHtmlTags(news.descriptionE)}
                                 </Text>
                                 <View style={styles.footer}>
-                                    <Text style={styles.readMore}>Read more →</Text>
+                                    <Text style={styles.readMore}>Read more <MaterialIcons name="arrow-forward
+                                    -ios" color="#4A90E2" size={14} /></Text>
                                 </View>
                             </View>
                         </View>
@@ -104,8 +106,9 @@ const RecentNewsListing = () => {
 
 const styles = StyleSheet.create({
     wrapper: {
-        backgroundColor: "#F9F9F9",
+        backgroundColor: COLORS.background,
         paddingTop: 20,
+        paddingBottom: 40,
     },
     loadingContainer: {
         padding: 40,
@@ -139,14 +142,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderRadius: 16,
         overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 3,
+        // shadowColor: '#000',
+        // shadowOffset: {
+        //     width: 0,
+        //     height: 2,
+        // },
+        // shadowOpacity: 0.08,
+        // shadowRadius: 8,
+        // elevation: 3,
     },
     imageContainer: {
         position: 'relative',

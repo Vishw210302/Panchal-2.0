@@ -21,7 +21,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { getVillagesListing, getPerents, updateMember, editMember } from '../../api/user_api';
 import { FCMContext } from '../../services/FCMContext';
 import { COLORS } from '../../styles/colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUser } from '../../context/UserContext';
 
 const EditFamilyMember = ({ route }) => {
     const { memberId } = route.params || {}; // Get member ID from route params
@@ -63,6 +63,8 @@ const EditFamilyMember = ({ route }) => {
     const totalSteps = 4;
     const navigation = useNavigation();
     const { fcmToken } = useContext(FCMContext);
+    const { userData } = useUser()
+
     console.log(formData, "Form Data...");
     const genderOptions = [
         { label: 'Male', value: 'Male' },
@@ -138,7 +140,6 @@ const EditFamilyMember = ({ route }) => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const userData = await AsyncStorage.getItem('userData');
                 if (userData) {
                     const parsedUserData = JSON.parse(userData);
 

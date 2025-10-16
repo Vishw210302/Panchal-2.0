@@ -10,16 +10,14 @@ import {
     View,
     Alert,
     ActivityIndicator,
-    Platform
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createEvent } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useUser } from '../../context/UserContext';
 
-const AddEvent = () => {
-    const navigation = useNavigation();
+const AddEvent = ({navigation}) => {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         titleE: '',
@@ -31,6 +29,7 @@ const AddEvent = () => {
     const [imageData, setImageData] = useState(null);
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
+    const {userData} = useUser()
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({
@@ -118,11 +117,8 @@ const AddEvent = () => {
 
         try {
             setLoading(true);
-
-            // Get user data from AsyncStorage
-            const userData = await AsyncStorage.getItem('userData');
             const parsedUserData = JSON.parse(userData);
-            const createdBy = `${parsedUserData.member.firstname} ${parsedUserData.member.lastname}`;
+            const createdBy = `${parsedUserData.firstname} ${parsedUserData.lastname}`;
 
             // Prepare form data for multipart/form-data
             const eventFormData = new FormData();

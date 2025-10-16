@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import {
     Alert,
@@ -13,14 +12,15 @@ import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { familyList, deleteMember } from '../../api/user_api';
+import { useUser } from '../../context/UserContext';
+import HeaderBack from '../../components/common/HeaderBack';
 
-const ViewFamilyList = () => {
-    const navigation = useNavigation();
+
+const ViewFamilyList = ({navigation}) => {
     const [familyMembers, setFamilyMembers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [currentUser, setCurrentUser] = useState(null);
+    const { userData } = useUser()
 
     useEffect(() => {
         fetchFamilyData();
@@ -30,16 +30,14 @@ const ViewFamilyList = () => {
     const fetchFamilyData = async () => {
         try {
             setLoading(true);
-            const userData = await AsyncStorage.getItem('userData');
+            console.log(typeof userData,"TYPEOFUSERDATA")
             if (userData) {
-                const parsedUserData = JSON.parse(userData);
-                setCurrentUser(parsedUserData.member);
-
-                const res = await familyList(parsedUserData.member._id);
+                console.log(userData._id,"ID of USERDATA")
+                const res = await familyList(userData._id);
 
                 if (res && res.family) {
                     // Transform the family data to match our display format
-                    const transformedFamily = transformFamilyData(res.family, parsedUserData.member);
+                    const transformedFamily = transformFamilyData(res.family, userData);
                     setFamilyMembers(transformedFamily);
                 }
             }
@@ -224,17 +222,8 @@ const ViewFamilyList = () => {
 
     if (loading) {
         return (
-            <View style={[styles.container, styles.centerContent]}>
-                <View style={styles.header}>
-                    <TouchableOpacity
-                        activeOpacity={0.7}
-                        onPress={handleBack}
-                        style={styles.backButton}>
-                        <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Our Family</Text>
-                    <View style={styles.placeholder} />
-                </View>
+            <View style={styles.container}>
+                <HeaderBack navigation={navigation} title='Our Family' />
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={COLORS.primary} />
                     <Text style={styles.loadingText}>Loading family members...</Text>
@@ -246,21 +235,7 @@ const ViewFamilyList = () => {
     return (
         <View style={styles.container}>
             {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={handleBack}
-                    style={styles.backButton}>
-                    <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Our Family</Text>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={fetchFamilyData}
-                    style={styles.refreshButton}>
-                    <Ionicons name="refresh" color="#fff" size={24} />
-                </TouchableOpacity>
-            </View>
+            <HeaderBack navigation={navigation} title='Our Family' />
 
             {/* Content */}
             <ScrollView
@@ -386,10 +361,10 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: COLORS.background,
     },
-    centerContent: {
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+    // centerContent: {
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    // },
     header: {
         flexDirection: 'row',
         alignItems: 'center',

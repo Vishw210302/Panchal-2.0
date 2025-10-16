@@ -26,8 +26,8 @@ const LoginScreen = () => {
 
   const { fcmToken } = useContext(FCMContext);
   const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('aarav@gmail.com');
+  const [password, setPassword] = useState('Sandip@1234');
   const [emailError, setEmailError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState('');

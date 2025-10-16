@@ -11,6 +11,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NotificationService } from '../Services/NotificationService';
 import { FCMContext } from '../../services/FCMContext';
+import { COLORS } from '../../styles/colors';
 
 const NotificationsScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
   actionButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.primary,
     borderRadius: 8,
   },
   actionButtonText: {
@@ -216,10 +217,10 @@ const styles = StyleSheet.create({
   clearButton: {
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: '#FF6B35',
+    borderColor: COLORS.primary,
   },
   clearButtonText: {
-    color: '#FF6B35',
+    color: COLORS.primary,
     fontWeight: '600',
   },
   notificationItem: {
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
   unreadNotification: {
     backgroundColor: '#f8f9ff',
     borderLeftWidth: 4,
-    borderLeftColor: '#FF6B35',
+    borderLeftColor: COLORS.primary,
   },
   notificationContent: {
     flex: 1,
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#FF6B35',
+    backgroundColor: COLORS.primary,
     marginLeft: 8,
   },
   notificationBody: {

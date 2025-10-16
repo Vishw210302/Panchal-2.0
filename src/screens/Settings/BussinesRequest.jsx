@@ -21,6 +21,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { postOrderCreate, verifyPayment, createBusiness, getSubscriptions } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useUser } from '../../context/UserContext';
 
 
 const BussinesRequest = ({ navigation }) => {
@@ -37,7 +38,8 @@ const BussinesRequest = ({ navigation }) => {
     const [subscriptions, setSubscriptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingSubscriptions, setIsLoadingSubscriptions] = useState(true);
-
+    const { userData } = useUser()
+    
     const fadeAnim = useRef(new Animated.Value(0)).current;
     useEffect(() => {
         initializeData();
@@ -51,7 +53,6 @@ const BussinesRequest = ({ navigation }) => {
     const initializeData = async () => {
         try {
             // Get user data
-            const userData = await AsyncStorage.getItem('userData');
             const parsedData = JSON.parse(userData);
             setUser(parsedData);
             const userId = parsedData.member._id;

@@ -13,6 +13,7 @@ import {
 } from "react-native";
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { COLORS } from "../../styles/colors";
 
 const { height, width } = Dimensions.get("window");
 
@@ -464,10 +465,10 @@ const NotificationModal = ({ visible, onClose }) => {
         },
         unreadCounter: {
             fontSize: 14,
-            color: '#FF6B35',
+            color: COLORS.primary,
             marginLeft: 8,
             fontWeight: '600',
-            backgroundColor: '#FF6B35' + '20',
+            backgroundColor: COLORS.primary + '20',
             paddingHorizontal: 8,
             paddingVertical: 2,
             borderRadius: 12,
@@ -588,8 +589,8 @@ const NotificationModal = ({ visible, onClose }) => {
         notificationItemUnread: {
             backgroundColor: '#FEFEFE',
             borderLeftWidth: 4,
-            borderLeftColor: '#FF6B35',
-            borderColor: '#FF6B35' + '20',
+            borderLeftColor: COLORS.primary,
+            borderColor: COLORS.primary + '20',
         },
         notificationContent: {
             flex: 1,
@@ -634,7 +635,7 @@ const NotificationModal = ({ visible, onClose }) => {
             width: 8,
             height: 8,
             borderRadius: 4,
-            backgroundColor: '#FF6B35',
+            backgroundColor: COLORS.primary,
             marginTop: 6,
         },
         notificationMessage: {
@@ -704,7 +705,7 @@ const NotificationModal = ({ visible, onClose }) => {
             elevation: 2,
         },
         primaryButton: {
-            backgroundColor: '#FF6B35',
+            backgroundColor: COLORS.primary,
         },
         secondaryButton: {
             backgroundColor: '#6B7280',
@@ -731,7 +732,7 @@ const NotificationModal = ({ visible, onClose }) => {
         statNumber: {
             fontSize: 18,
             fontWeight: '800',
-            color: '#FF6B35',
+            color: COLORS.primary,
         },
         statLabel: {
             fontSize: 12,

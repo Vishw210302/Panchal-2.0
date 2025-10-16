@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getVillagesListing, updateMember } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
+import { useUser } from '../../context/UserContext';
 
 const EditProfile = () => {
     const [formData, setFormData] = useState({
@@ -49,6 +50,7 @@ const EditProfile = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
     const [userId, setUserId] = useState(null);
+    const { userData, setUserData } = useUser()
 
     const navigation = useNavigation();
 
@@ -87,12 +89,8 @@ const EditProfile = () => {
     const loadUserData = async () => {
         try {
             setIsLoading(true);
-            const userDataString = await AsyncStorage.getItem('userData');
 
-            if (userDataString) {
-                const userDatas = JSON.parse(userDataString);
-                const userData = userDatas.member
-                console.log(userData, 'Loaded User Data');
+            if (userData) {
                 setUserId(userData._id || userData.id);
 
                 // Parse date of birth
@@ -362,10 +360,7 @@ const EditProfile = () => {
             const response = await updateMember(userId, updateData);
             console.log(response && response.status, 'Update Response');
             if (response && response.status) {
-                // Update AsyncStorage with new data
-
-                await AsyncStorage.getItem('userData');
-                await AsyncStorage.setItem('userData', JSON.stringify(response));
+                setUserData(response.member)
 
                 Alert.alert(
                     'Success',

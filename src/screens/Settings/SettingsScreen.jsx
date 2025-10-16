@@ -16,6 +16,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import HeaderBack from '../../components/common/HeaderBack';
 
 
 
@@ -153,14 +154,7 @@ const SettingsScreen = () => {
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
-            <View style={styles.header}>
-                <TouchableOpacity
-                    activeOpacity={0.7}
-                    onPress={handleBack}>
-                    <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Settingsss</Text>
-            </View>
+            <HeaderBack navigation={navigation} title='Settings' />
 
             <SettingsSection title="Account">
                 <SettingsItem
@@ -458,7 +452,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     section: {
-        marginBottom: 25,
+        marginTop: 20,
     },
     sectionTitle: {
         fontSize: 16,

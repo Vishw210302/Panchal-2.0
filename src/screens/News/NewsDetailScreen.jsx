@@ -1,17 +1,12 @@
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { COLORS } from '../../styles/colors';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import HeaderBack from "../../components/common/HeaderBack";
 import ENV from '../../config/env';
-
+import { COLORS } from '../../styles/colors';
 const NewsDetailScreen = ({ navigation, route }) => {
 
     const newsItem = route?.params?.newsItem;
 
     const newsData = newsItem;
-
-    const handleBack = () => {
-        navigation?.goBack();
-    };
 
     const stripHtmlTags = (str) => {
         if (!str) return "";
@@ -47,15 +42,7 @@ const NewsDetailScreen = ({ navigation, route }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity
-                    onPress={handleBack}
-                    activeOpacity={0.7}
-                >
-                    <MaterialIcons name="arrow-back-ios" color="#000" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>News Details</Text>
-            </View>
+            <HeaderBack title='News Details' navigation={navigation}/>
             <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
                 <View style={styles.imageContainer}>
                     <Image
@@ -86,30 +73,6 @@ const NewsDetailScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        marginBottom: 20,
-        marginTop: 40,
-    },
-    header: {
-        flexDirection: 'row',
-        gap: 12,
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 15,
-        backgroundColor: '#fff',
-        elevation: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-    },
-    headerTitle: {
-        fontSize: 21,
-        fontWeight: '600',
-    },
-    headerText: {
-        fontSize: 21,
-        fontWeight: '600',
     },
     scrollContainer: {
         flex: 1,

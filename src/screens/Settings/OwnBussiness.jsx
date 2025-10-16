@@ -15,8 +15,8 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getBussinessListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import ENV from '../../config/env';
+import { useUser } from '../../context/UserContext';
 
 const IMAGE_URL = ENV.IMAGE_URL;
 // Enable LayoutAnimation for Android
@@ -29,7 +29,8 @@ const OwnBussiness = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const fadeAnim = useRef(new Animated.Value(0)).current;
-
+    const { userData } = useUser()
+    
     useEffect(() => {
         fetchBusinesses();
     }, []);
@@ -37,7 +38,6 @@ const OwnBussiness = ({ navigation }) => {
     const fetchBusinesses = async () => {
         setLoading(true);
         try {
-            const userData = await AsyncStorage.getItem('userData');
             const parsedUserData = JSON.parse(userData);
 
             const res = await getBussinessListing(parsedUserData.member._id);

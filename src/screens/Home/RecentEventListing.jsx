@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState, useRef } from 'react';
 import {
     Image,
@@ -12,18 +11,20 @@ import {
 } from 'react-native';
 import { getEvents } from '../../api/user_api';
 import ENV from '../../config/env';
+import { COLORS } from '../../styles/colors';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 60;
+const CARD_WIDTH = width - 30;
 const CARD_MARGIN = 15;
 
-const RecentEventListing = () => {
-    const navigation = useNavigation();
+const RecentEventListing = ({ navigation }) => {
     const [eventListing, setEventListing] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeIndex, setActiveIndex] = useState(0);
     const scrollViewRef = useRef(null);
-
+    const goToAllEvents = () => {
+        navigation.navigate("EventScreen")
+    }
     useEffect(() => {
         const fetchEvents = async () => {
             try {
@@ -74,7 +75,7 @@ const RecentEventListing = () => {
         <View style={styles.wrapper}>
             <View style={styles.headerContainer}>
                 <Text style={styles.sectionTitle}>Upcoming Events</Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={goToAllEvents}>
                     <Text style={styles.viewAllText}>View All</Text>
                 </TouchableOpacity>
             </View>
@@ -85,9 +86,9 @@ const RecentEventListing = () => {
                 pagingEnabled={false}
                 showsHorizontalScrollIndicator={false}
                 decelerationRate="fast"
-                snapToInterval={CARD_WIDTH + CARD_MARGIN * 2}
-                snapToAlignment="center"
-                contentContainerStyle={styles.scrollContent}
+                snapToInterval={CARD_WIDTH + CARD_MARGIN}
+                snapToAlignment="start"
+                contentContainerStyle={[styles.scrollContent]}
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
             >
@@ -96,7 +97,7 @@ const RecentEventListing = () => {
                         key={event._id}
                         activeOpacity={0.9}
                         onPress={() => handleEventPress(event._id)}
-                        style={styles.cardWrapper}
+                        style={index == (eventListing.length - 1) ? { marginRight: 0 } : styles.cardWrapper}
                     >
                         <View style={styles.card}>
                             <Image
@@ -157,8 +158,8 @@ const RecentEventListing = () => {
 
 const styles = StyleSheet.create({
     wrapper: {
-        backgroundColor: "#F9F9F9",
-        paddingVertical: 20,
+        backgroundColor: COLORS.background,
+        // paddingBottom: 20,
     },
     loadingContainer: {
         padding: 40,
@@ -186,22 +187,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     cardWrapper: {
-        marginHorizontal: CARD_MARGIN,
+        // marginHorizontal: CARD_MARGIN,
+        marginRight: CARD_MARGIN,
     },
     card: {
         width: CARD_WIDTH,
         height: 320,
         borderRadius: 20,
         overflow: 'hidden',
-        backgroundColor: '#FFFFFF',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 4,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 6,
     },
     image: {
         width: '100%',
@@ -247,7 +240,7 @@ const styles = StyleSheet.create({
     locationContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 12,
+        // marginBottom: 12,
     },
     locationIcon: {
         fontSize: 14,

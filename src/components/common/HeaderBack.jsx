@@ -2,7 +2,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { COLORS } from '../../styles/colors';
 
-const HeaderBack = ({ title = '', navigation }) => {
+const HeaderBack = ({ title = '', navigation, icon  }) => {
   const handleBack = () => {
     navigation?.goBack();
   };

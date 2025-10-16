@@ -11,6 +11,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import NotificationModal from './NotificationModal';
 import ENV from '../../config/env';
+import { COLORS } from '../../styles/colors';
 
 const { height } = Dimensions.get('window');
 
@@ -23,6 +24,10 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
   const closeNotificationModal = () => setNotificationModalVisible(false);
 
   const closeProfileModal = () => {
+    setProfileModalVisible(false);
+  };
+  
+  const logout = () => {
     setUserData(null);
     navigation.navigate('Login');
     setProfileModalVisible(false);
@@ -32,12 +37,12 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
 
   const styles = {
     headerContainer: {
-      backgroundColor: '#FF6B35',
+      backgroundColor: COLORS.primary,
     },
     headerInner: {
       height: Platform.OS === 'ios' ? 130 : 95,
       paddingTop: Platform.OS === 'ios' ? 25 : 30,
-      backgroundColor: '#FF6B35',
+      backgroundColor: COLORS.primary,
       paddingBottom: 0,
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
@@ -91,7 +96,7 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
       minWidth: 18,
       height: 18,
       borderWidth: 2,
-      borderColor: '#FF6B35',
+      borderColor: COLORS.primary,
       alignItems: 'center',
       justifyContent: 'center',
     },
@@ -149,7 +154,7 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
       height: 100,
       borderRadius: 50,
       borderWidth: 4,
-      borderColor: '#FF6B35',
+      borderColor: COLORS.primary,
       marginBottom: 16,
     },
     profileName: {
@@ -223,7 +228,7 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
       fallback: '🚪',
       danger: true,
       onPress: () => {
-        closeProfileModal();
+        logout();
       },
     },
   ];
@@ -247,53 +252,54 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
       <View style={styles.headerInner}>
         <View style={styles.headerContent}>
           <View style={styles.leftSection}>
-            <Text style={styles.titleText}>Panchal Samaj</Text>
+            {/* <Text style={styles.titleText}>Panchal Samaj</Text> */}
+            <Text style={styles.titleText}>સવાસો ગોળ અમદાવાદ પંચાલ સમાજ</Text>
           </View>
           {userData &&
-          <View style={styles.rightSection}>
-            <TouchableOpacity
-              onPress={handleNotificationPress}
-              activeOpacity={0.7}
-              style={styles.notificationButton}
-            >
-              <View style={styles.notificationIconContainer}>
-                <IconComponent
-                  name="notifications"
-                  color="#e9be33ff"
-                  size={30}
-                  fallback="🔔"
-                />
-                {notificationCount > 0 && (
-                  <View style={styles.notificationBadge}>
-                    <Text style={styles.badgeText}>
-                      {notificationCount > 99 ? '99+' : notificationCount}
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </TouchableOpacity>
-
-            {userData && (
+            <View style={styles.rightSection}>
               <TouchableOpacity
-                onPress={handleProfilePress}
+                onPress={handleNotificationPress}
                 activeOpacity={0.7}
-                style={styles.profileButton}
+                style={styles.notificationButton}
               >
-                <Image
-                  source={{
-                    uri:
-                      userData && userData?.photo
-                        ? ENV.IMAGE_URL + userData.photo
-                        : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-                  }}
-                  style={styles.profileImage}
-                  defaultSource={{
-                    uri: 'https://via.placeholder.com/44x44/cccccc/ffffff?text=U',
-                  }}
-                />
+                <View style={styles.notificationIconContainer}>
+                  <IconComponent
+                    name="notifications"
+                    color="#e9be33ff"
+                    size={30}
+                    fallback="🔔"
+                  />
+                  {notificationCount > 0 && (
+                    <View style={styles.notificationBadge}>
+                      <Text style={styles.badgeText}>
+                        {notificationCount > 99 ? '99+' : notificationCount}
+                      </Text>
+                    </View>
+                  )}
+                </View>
               </TouchableOpacity>
-            )}
-          </View>}
+
+              {userData && (
+                <TouchableOpacity
+                  onPress={handleProfilePress}
+                  activeOpacity={0.7}
+                  style={styles.profileButton}
+                >
+                  <Image
+                    source={{
+                      uri:
+                        userData && userData?.photo
+                          ? ENV.IMAGE_URL + userData.photo
+                          : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+                    }}
+                    style={styles.profileImage}
+                    defaultSource={{
+                      uri: 'https://via.placeholder.com/44x44/cccccc/ffffff?text=U',
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>}
         </View>
       </View>
 
@@ -361,7 +367,7 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
                   <IconComponent
                     name={item.icon}
                     size={20}
-                    color={item.danger ? '#EF4444' : '#FF6B35'}
+                    color={item.danger ? '#EF4444' : COLORS.primary}
                     fallback={item.fallback}
                   />
                   <Text

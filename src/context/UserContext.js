@@ -20,7 +20,7 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     if (!!userData) {
-      AsyncStorage.setItem('userData', JSON.stringify(userData.member))
+      AsyncStorage.setItem('userData', JSON.stringify(userData))
         .catch(err => console.error("Failed to save userData:", err));
     } else {
       AsyncStorage.removeItem('userData')

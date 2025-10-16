@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, ActivityIndicator, StatusBar } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeSliderCard from '../../components/home/HomeSliderCard';
 import AllCardsOfPage from './AllCardsOfPage';
@@ -8,8 +7,8 @@ import RecentNewsListing from './RecentNewsListing';
 import RecentEventListing from './RecentEventListing';
 import { COLORS } from '../../styles/colors';
 
-const HomeScreen = () => {
-    const navigation = useNavigation();
+const HomeScreen = ({navigation}) => {
+    // const navigation = useNavigation();
     const [isChecking, setIsChecking] = useState(true);
 
     useEffect(() => {
@@ -44,7 +43,7 @@ const HomeScreen = () => {
                 <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
                 <HomeSliderCard />
                 <AllCardsOfPage />
-                <RecentEventListing />
+                <RecentEventListing navigation={navigation} />
                 <RecentNewsListing />
             </View>
         </ScrollView>

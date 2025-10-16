@@ -4,7 +4,6 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     View,
     ActivityIndicator,
@@ -14,9 +13,11 @@ import {
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLORS } from '../../styles/colors';
 import { changeCurrentPassword } from '../../api/user_api';
+import { useUser } from '../../context/UserContext';
+import InputField from '../../components/common/InputField';
 
 const ChangePasswordScreen = () => {
     const [currentPassword, setCurrentPassword] = useState('');
@@ -35,6 +36,7 @@ const ChangePasswordScreen = () => {
         confirmPassword: ''
     });
     const navigation = useNavigation();
+    const {userData} = useUser()
     
     // Add refs for text inputs
     const currentPasswordRef = useRef(null);
@@ -48,10 +50,9 @@ const ChangePasswordScreen = () => {
     const loadUserData = async () => {
         try {
             setIsLoading(true);
-            const userData = await AsyncStorage.getItem('userData');
             if (userData) {
-                const parsedUserData = JSON.parse(userData);
-                setMemberId(parsedUserData.member._id);
+                // const parsedUserData = JSON.parse(userData);
+                setMemberId(userData._id);
             } else {
                 setErrorMessage('Unable to load user data. Please login again.');
             }
@@ -185,69 +186,6 @@ const ChangePasswordScreen = () => {
         navigation.navigate('settings');
     };
 
-    const InputField = ({
-        label,
-        value,
-        onChangeText,
-        secureTextEntry,
-        toggleSecure,
-        error,
-        editable = true,
-        inputRef,
-        onSubmitEditing
-    }) => (
-        <View style={styles.inputContainer}>
-            <Text style={styles.label}>{label}</Text>
-            <View style={[
-                styles.inputWrapper,
-                !editable && styles.inputDisabled,
-                error && styles.inputError
-            ]}>
-                <TextInput
-                    ref={inputRef}
-                    value={value}
-                    onChangeText={(text) => {
-                        onChangeText(text);
-                        // Clear field error when user starts typing
-                        if (error) {
-                            setFieldErrors(prev => ({
-                                ...prev,
-                                [label.toLowerCase().includes('current') ? 'currentPassword' : 
-                                 label.toLowerCase().includes('new') ? 'newPassword' : 'confirmPassword']: ''
-                            }));
-                        }
-                    }}
-                    placeholder={label}
-                    placeholderTextColor={COLORS.gray}
-                    secureTextEntry={secureTextEntry}
-                    style={[styles.input, !editable && styles.textDisabled]}
-                    editable={editable}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    autoComplete="password"
-                    importantForAutofill="yes"
-                    textContentType="password"
-                    returnKeyType={onSubmitEditing ? "next" : "done"}
-                    onSubmitEditing={onSubmitEditing}
-                    blurOnSubmit={!onSubmitEditing}
-                />
-                <TouchableOpacity 
-                    activeOpacity={0.7} 
-                    onPress={toggleSecure}
-                    disabled={!editable}
-                    style={styles.eyeIcon}
-                >
-                    <Ionicons
-                        name={secureTextEntry ? 'eye-off-outline' : 'eye-outline'}
-                        size={22}
-                        color={editable ? COLORS.gray : COLORS.lightGray}
-                    />
-                </TouchableOpacity>
-            </View>
-            {error ? <Text style={styles.fieldErrorText}>{error}</Text> : null}
-        </View>
-    );
-
     if (isLoading && !memberId) {
         return (
             <View style={styles.loadingContainer}>
@@ -273,8 +211,8 @@ const ChangePasswordScreen = () => {
             <ScrollView
                 style={styles.container}
                 contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
+                // showsVerticalScrollIndicator={false}
+                // keyboardShouldPersistTaps="handled"
             >
                 <Text style={styles.title}>Change Password</Text>
                 <Text style={styles.subtitle}>
@@ -447,55 +385,9 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         flex: 1,
     },
-    // Input Fields
-    inputContainer: {
-        marginBottom: 15,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: COLORS.darkGray,
-        marginBottom: 8,
-    },
-    inputWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: COLORS.card,
-        borderWidth: 1,
-        borderColor: COLORS.border,
-        borderRadius: 12,
-        paddingHorizontal: 16,
-        minHeight: 50,
-    },
-    inputError: {
-        borderColor: COLORS.error,
-        backgroundColor: '#FFF5F5',
-    },
-    inputDisabled: {
-        backgroundColor: COLORS.lightBackground,
-        borderColor: COLORS.lightGray,
-    },
-    input: {
-        flex: 1,
-        fontSize: 16,
-        color: COLORS.darkGray,
-        paddingVertical: 12,
-        paddingRight: 8,
-        includeFontPadding: false,
-    },
-    textDisabled: {
-        color: COLORS.gray,
-    },
-    fieldErrorText: {
-        color: COLORS.error,
-        fontSize: 12,
-        marginTop: 4,
-        marginLeft: 4,
-        fontWeight: '500',
-    },
-    eyeIcon: {
-        padding: 4,
-        marginLeft: 4,
+    buttonDisabled: {
+        backgroundColor: COLORS.gray,
+        opacity: 0.6,
     },
     button: {
         backgroundColor: COLORS.primary,
@@ -509,33 +401,30 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         elevation: 3,
     },
-    buttonDisabled: {
-        backgroundColor: COLORS.gray,
-        opacity: 0.6,
-    },
-    buttonText: {
+      buttonText: {
         color: COLORS.white,
         fontSize: 16,
         fontWeight: '700',
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
+    
     passwordRequirements: {
         marginTop: 25,
         padding: 15,
-        backgroundColor: COLORS.lightBackground,
+        backgroundColor: COLORS.lightGray,
         borderRadius: 8,
         borderLeftWidth: 4,
         borderLeftColor: COLORS.primary,
     },
     requirementsTitle: {
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: '600',
         color: COLORS.darkGray,
         marginBottom: 8,
     },
     requirement: {
-        fontSize: 12,
+        fontSize: 14,
         color: COLORS.gray,
         marginBottom: 4,
         lineHeight: 16,
