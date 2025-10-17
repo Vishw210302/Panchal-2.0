@@ -13,6 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { changePassword, resetPassword, verifyOtp } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const ForgotPasswordScreen = () => {
 
@@ -527,8 +528,8 @@ const ForgotPasswordScreen = () => {
 
                 <View style={styles.passwordRequirements}>
                     <Text style={styles.requirementsTitle}>Password Requirements:</Text>
-                    <Text style={styles.requirementsText}>• At least 8 characters long</Text>
-                    <Text style={styles.requirementsText}>• Mix of letters and numbers recommended</Text>
+                    <Text style={styles.requirementsText}>{'\u2022'} At least 8 characters long</Text>
+                    <Text style={styles.requirementsText}>{'\u2022'} Mix of letters and numbers recommended</Text>
                 </View>
             </View>
         );
@@ -536,12 +537,7 @@ const ForgotPasswordScreen = () => {
 
     return (
         <View style={styles.safeArea}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                    <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>{getStepTitle()}</Text>
-            </View>
+            <HeaderBack title={getStepTitle()} navigation={navigation} />
 
             <ScrollView
                 style={styles.container}

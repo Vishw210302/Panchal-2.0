@@ -14,6 +14,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getCommunitiesMemberListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import ENV from '../../config/env';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const CommitteeMemberScreen = ({ navigation }) => {
 
@@ -130,12 +131,7 @@ const CommitteeMemberScreen = ({ navigation }) => {
         return (
             <View style={styles.loadingContainer}>
                 <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={handleBack} activeOpacity={0.7} style={styles.backButton}>
-                        <MaterialIcons name="arrow-back" color={COLORS.white} size={24} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Committee Members</Text>
-                </View>
+                <HeaderBack title="Committee Members" icon="group" navigation={navigation} />
                 <View style={styles.loadingContent}>
                     <Text style={styles.loadingText}>Loading committee members...</Text>
                 </View>
@@ -146,19 +142,7 @@ const CommitteeMemberScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} activeOpacity={0.7} style={styles.backButton}>
-                    <MaterialIcons name="arrow-back" color={COLORS.white} size={24} />
-                </TouchableOpacity>
-                <View style={styles.headerContent}>
-                    <Text style={styles.headerTitle}>Committee Members</Text>
-                    <Text style={styles.headerSubtitle}>{committeeMembersListing.length} Active Members</Text>
-                </View>
-                <View style={styles.headerIcon}>
-                    <MaterialIcons name="group" size={28} color={COLORS.white} />
-                </View>
-            </View>
+            <HeaderBack title="Committee Members" subTitle={`${committeeMembersListing.length} Active Members`} icon="group" navigation={navigation} />
 
             <ScrollView
                 style={styles.membersContainer}
@@ -181,11 +165,11 @@ const CommitteeMemberScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: COLORS.background,
     },
     loadingContainer: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: COLORS.background,
     },
     loadingContent: {
         flex: 1,
@@ -320,6 +304,7 @@ const styles = StyleSheet.create({
         marginLeft: 4,
     },
     cardBody: {
+        display: 'flex',
         marginBottom: 16,
     },
     infoRow: {

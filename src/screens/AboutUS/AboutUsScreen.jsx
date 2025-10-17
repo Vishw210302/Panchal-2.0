@@ -15,6 +15,8 @@ import OurCodeValuesAboutUs from './OurCodeValuesAboutUs';
 import WhatWeDoAboutUs from './WhatWeDoAboutUs';
 import ENV from '../../config/env';
 import HeaderBack from '../../components/common/HeaderBack';
+import RenderHtml from 'react-native-render-html';
+
 
 const { height } = Dimensions.get('window');
 
@@ -100,7 +102,7 @@ const AboutUsScreen = ({ navigation }) => {
                         }
                     ]}
                 >
-                    {displayData.image && (
+                    {displayData.image ? (
                         <Image
                             source={{
                                 uri: ENV.IMAGE_URL + displayData.image
@@ -108,13 +110,14 @@ const AboutUsScreen = ({ navigation }) => {
                             style={styles.bannerImage}
                             resizeMode="cover"
                         />
-                    )}
-                    <View style={styles.bannerOverlay}>
-                        <View style={styles.bannerContent}>
-                            <Text style={styles.bannerTitle}>{displayData.titleE || 'About Us'}</Text>
-                            <Text style={styles.bannerSubtitle}>Unity • Heritage • Progress</Text>
+                    ) :
+                        <View style={styles.bannerOverlay}>
+                            <View style={styles.bannerContent}>
+                                <Text style={styles.bannerTitle}>{displayData.titleE || 'About Us'}</Text>
+                                <Text style={styles.bannerSubtitle}>Unity {' • '} Heritage {' • '} Progress</Text>
+                            </View>
                         </View>
-                    </View>
+                    }
                 </Animated.View>
 
                 <Animated.View
@@ -128,12 +131,16 @@ const AboutUsScreen = ({ navigation }) => {
                 >
                     <View style={styles.sectionCard}>
                         <View style={styles.sectionHeader}>
-                            <Text style={styles.sectionTitle}>About {displayData.titleE || 'Us'}</Text>
+                            <Text style={styles.sectionTitle}>{displayData.titleE || 'About Us'}</Text>
                             <View style={styles.titleUnderline} />
                         </View>
 
                         <Text style={styles.description}>
-                            {stripHtmlTags(displayData.descriptionE) || 'Loading description...'}
+                            {/* {stripHtmlTags(displayData.descriptionE) || 'Loading description...'} */}
+                            {displayData?.descriptionE && <RenderHtml
+                                contentWidth={1000}
+                                source={{ html: displayData.descriptionE }}
+                            />}
                         </Text>
                     </View>
 
@@ -232,15 +239,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 16,
         marginBottom: 20,
         borderRadius: 16,
-        padding: 24,
-        shadowColor: COLORS.black,
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.08,
-        shadowRadius: 8,
-        elevation: 4,
+        padding: 10,
     },
     sectionHeader: {
         alignItems: 'center',
@@ -254,7 +253,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     titleUnderline: {
-        width: 60,
+        width: 100,
         height: 3,
         backgroundColor: COLORS.primary,
         borderRadius: 2,

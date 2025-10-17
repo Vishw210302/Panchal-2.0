@@ -20,6 +20,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getVillagesListing, updateMember } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import { useUser } from '../../context/UserContext';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const EditProfile = () => {
     const [formData, setFormData] = useState({
@@ -378,8 +379,8 @@ const EditProfile = () => {
                 Alert.alert('Error', response?.message || 'Failed to update profile');
             }
         } catch (error) {
-            console.error('Error updating profile:', error);
-            Alert.alert('Error', 'Failed to update profile. Please try again.');
+            // console.error('Error updating profile:', error);
+            Alert.alert('Error', error.message);
         } finally {
             setIsUpdating(false);
         }
@@ -543,19 +544,11 @@ const EditProfile = () => {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardView}
             >
-                <View style={styles.header}>
-                    <TouchableOpacity
-                        onPress={() => navigation.goBack()}
-                        activeOpacity={0.7}
-                        style={styles.backButton}
-                    >
-                        <MaterialIcons name="arrow-back-ios" color={COLORS.white} size={24} />
-                    </TouchableOpacity>
-                    <View style={styles.headerContent}>
-                        <Text style={styles.headerTitle}>Update Profile</Text>
-                        <Text style={styles.headerSubtitle}>Keep your information up to date</Text>
-                    </View>
-                </View>
+                <HeaderBack 
+                    title="Update Profile" 
+                    subtitle="Keep your information up to date"
+                    navigation={navigation} 
+                />
 
                 <ScrollView
                     style={styles.scrollView}

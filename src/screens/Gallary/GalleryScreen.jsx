@@ -16,6 +16,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getGallaryImages } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import ENV from '../../config/env';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = (width - 48) / 3; // 3 columns with padding
@@ -27,10 +28,6 @@ const GallaryScreen = ({ navigation }) => {
     const [error, setError] = useState(null);
     const [selectedImage, setSelectedImage] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
-
-    const handleBack = () => {
-        navigation?.goBack();
-    };
 
     const fetchGalleryImages = useCallback(async () => {
         try {
@@ -149,12 +146,7 @@ const GallaryScreen = ({ navigation }) => {
     if (loading) {
         return (
             <View style={styles.container}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                        <MaterialIcons name="arrow-back-ios" color={COLORS.white} size={24} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Gallery</Text>
-                </View>
+                <HeaderBack  title="Gallery" navigation={navigation} />
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={COLORS.primary} />
                     <Text style={styles.loadingText}>Loading gallery...</Text>
@@ -167,12 +159,7 @@ const GallaryScreen = ({ navigation }) => {
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
             
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                    <MaterialIcons name="arrow-back-ios" color={COLORS.white} size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Gallery</Text>
-            </View>
+            <HeaderBack title="Gallery" navigation={navigation} />
 
             <FlatList
                 data={images}

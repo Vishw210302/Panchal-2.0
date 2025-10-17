@@ -14,6 +14,7 @@ import { getEventDetails } from '../../api/user_api';
 import { useEffect, useState } from 'react';
 import { COLORS } from '../../styles/colors';
 import ENV from '../../config/env';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const EventDetailScreen = ({ route, navigation }) => {
   const { event } = route.params;
@@ -172,23 +173,7 @@ const EventDetailScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={styles.backButton}
-          activeOpacity={0.7}
-        >
-          <MaterialIcons name="arrow-back" color="#fff" size={24} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Event Details</Text>
-        <TouchableOpacity
-          onPress={handleShare}
-          style={styles.shareButton}
-          activeOpacity={0.7}
-        >
-          <MaterialIcons name="share" color="#fff" size={24} />
-        </TouchableOpacity>
-      </View>
+      <HeaderBack title="Event Details" navigation={navigation} icon="share" />
 
       <ScrollView
         style={styles.scrollView}

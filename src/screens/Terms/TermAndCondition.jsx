@@ -12,6 +12,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getTermsAndCondition } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const TermsAndConditions = () => {
     const [termsData, setTermsData] = useState(null);
@@ -220,19 +221,11 @@ const TermsAndConditions = () => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity
-                    onPress={handleBack}
-                    activeOpacity={0.7}
-                    style={styles.backButton}
-                >
-                    <MaterialIcons name="arrow-back-ios" color={COLORS.white} size={24} />
-                </TouchableOpacity>
-                <View style={styles.headerContent}>
-                    <Text style={styles.headerTitle}>Terms & Conditions</Text>
-                    <Text style={styles.headerSubtitle}>Please read carefully</Text>
-                </View>
-            </View>
+            <HeaderBack 
+                title="Terms & Conditions" 
+                subTitle="Please read carefully"
+                navigation={navigation} 
+            />
 
             {renderContent()}
         </View>

@@ -16,6 +16,7 @@ import { createEvent } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useUser } from '../../context/UserContext';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const AddEvent = ({navigation}) => {
     const [loading, setLoading] = useState(false);
@@ -166,15 +167,10 @@ const AddEvent = ({navigation}) => {
         <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
             <View style={styles.content}>
                 {/* Header */}
-                <View style={styles.header}>
-                    <TouchableOpacity 
-                        onPress={() => navigation.goBack()}
-                        style={styles.backButton}
-                    >
-                        <Text style={styles.backButtonText}>← Back</Text>
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Create New Event</Text>
-                </View>
+                <HeaderBack 
+                    title="Create New Event" 
+                    navigation={navigation} 
+                />
 
                 {/* Image Picker */}
                 <TouchableOpacity 

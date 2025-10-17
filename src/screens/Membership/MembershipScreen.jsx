@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   View,
   Text,
@@ -11,6 +10,7 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS } from '../../styles/colors';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const { width } = Dimensions.get('window');
 
@@ -62,16 +62,7 @@ const MembershipScreen = ({ navigation }) => {
       <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
       
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
-          <Icon name="arrow-back" size={24} color={COLORS.white} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Membership</Text>
-        <View style={styles.placeholder} />
-      </View>
+      <HeaderBack title="My Membership" navigation={navigation} />
 
       <ScrollView 
         style={styles.scrollView}

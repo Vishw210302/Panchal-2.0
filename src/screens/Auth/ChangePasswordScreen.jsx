@@ -18,8 +18,9 @@ import { COLORS } from '../../styles/colors';
 import { changeCurrentPassword } from '../../api/user_api';
 import { useUser } from '../../context/UserContext';
 import InputField from '../../components/common/InputField';
+import HeaderBack from '../../components/common/HeaderBack';
 
-const ChangePasswordScreen = () => {
+const ChangePasswordScreen = ({navigation}) => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [memberId, setMemberId] = useState('');
@@ -35,7 +36,6 @@ const ChangePasswordScreen = () => {
         newPassword: '',
         confirmPassword: ''
     });
-    const navigation = useNavigation();
     const {userData} = useUser()
     
     // Add refs for text inputs
@@ -200,12 +200,7 @@ const ChangePasswordScreen = () => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
-            <View style={styles.header}>
-                <TouchableOpacity activeOpacity={0.7} onPress={handleBack}>
-                    <MaterialIcons name="arrow-back-ios" color="#ffffffff" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Change Password</Text>
-            </View>
+            <HeaderBack title="Change Password" navigation={navigation} />
             
             <ScrollView
                 style={styles.container}
@@ -284,9 +279,9 @@ const ChangePasswordScreen = () => {
 
                 <View style={styles.passwordRequirements}>
                     <Text style={styles.requirementsTitle}>Password Requirements:</Text>
-                    <Text style={styles.requirement}>• At least 6 characters long</Text>
-                    <Text style={styles.requirement}>• Different from current password</Text>
-                    <Text style={styles.requirement}>• New and confirm password must match</Text>
+                    <Text style={styles.requirement}>{'\u2022'} At least 6 characters long</Text>
+                    <Text style={styles.requirement}>{'\u2022'} Different from current password</Text>
+                    <Text style={styles.requirement}>{'\u2022'} New and confirm password must match</Text>
                 </View>
 
             </ScrollView>

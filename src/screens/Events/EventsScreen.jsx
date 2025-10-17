@@ -11,6 +11,7 @@ import { COLORS } from '../../styles/colors';
 import { getEvents } from '../../api/user_api';
 import { useEffect, useState } from 'react';
 import ENV from '../../config/env';
+import HeaderBack from '../../components/common/HeaderBack';
 
 
 const EventsScreen = ({ navigation }) => {
@@ -64,7 +65,7 @@ const EventsScreen = ({ navigation }) => {
                     minute: '2-digit',
                     hour12: true
                 });
-                return `${formattedDate} • ${formattedTime}`;
+                return `${formattedDate} ${' • '} ${formattedTime}`;
             }
 
             return formattedDate;
@@ -127,12 +128,7 @@ const EventsScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={handleBack} activeOpacity={0.7}>
-                    <MaterialIcons name="arrow-back-ios" color="#fff" size={24} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Events</Text>
-            </View>
+             <HeaderBack title="Events" subTitle={`${events.length} Active Events`} icon="event" navigation={navigation} />
 
             {loading && events.length === 0 ? (
                 <View style={styles.loadingContainer}>

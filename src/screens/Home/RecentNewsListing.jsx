@@ -92,8 +92,9 @@ const RecentNewsListing = () => {
                                     {stripHtmlTags(news.descriptionE)}
                                 </Text>
                                 <View style={styles.footer}>
-                                    <Text style={styles.readMore}>Read more <MaterialIcons name="arrow-forward
-                                    -ios" color="#4A90E2" size={14} /></Text>
+                                    <View style={styles.readMore}>
+                                        <Text style={styles.readMoreText}>Read more </Text><MaterialIcons name={"arrow-forward-ios"} color="#4A90E2" size={14} />
+                                    </View>
                                 </View>
                             </View>
                         </View>
@@ -191,9 +192,14 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     readMore: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    readMoreText: {
         fontSize: 14,
         fontWeight: '600',
         color: '#4A90E2',
+        paddingBottom: 4
     },
 });
 

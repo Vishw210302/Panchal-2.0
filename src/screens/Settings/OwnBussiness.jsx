@@ -17,6 +17,7 @@ import { getBussinessListing } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import ENV from '../../config/env';
 import { useUser } from '../../context/UserContext';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const IMAGE_URL = ENV.IMAGE_URL;
 // Enable LayoutAnimation for Android
@@ -95,7 +96,7 @@ const OwnBussiness = ({ navigation }) => {
         }
     };
 
-    const renderBusinessCard = ({ item, index }) => {
+    const renderBusinessCard = ({ item }) => {
         const memberName = item.memberId
             ? `${item.memberId.firstname} ${item.memberId.middlename || ''} ${item.memberId.lastname}`.trim()
             : 'N/A';
@@ -189,7 +190,7 @@ const OwnBussiness = ({ navigation }) => {
                                 </Text>
                             </View>
                             <Text style={styles.subscriptionPrice}>
-                                ₹{item.subscriptionId.price} • {item.subscriptionId.durationInMonths}mo
+                                ₹{item.subscriptionId.price}{' • '}{item.subscriptionId.durationInMonths}mo
                             </Text>
                         </View>
                     )}
@@ -287,22 +288,9 @@ const OwnBussiness = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+            <HeaderBack title="My Businesses" subTitle={`${BussinesListing.length} ${BussinesListing.length === 1 ? 'Business' : 'Businesses'}`} icon="refresh" navigation={navigation} iconAction={onRefresh} iconActionText="Refresh" />
 
-            <View style={styles.header}>
-                <View>
-                    <Text style={styles.headerTitle}>My Businesses</Text>
-                    <Text style={styles.headerSubtitle}>
-                        {BussinesListing.length} {BussinesListing.length === 1 ? 'Business' : 'Businesses'}
-                    </Text>
-                </View>
-                <TouchableOpacity style={styles.headerButton} onPress={onRefresh}>
-                    <MaterialIcons name="refresh" size={24} color={COLORS.primary} />
-                </TouchableOpacity>
-            </View>
-
-            {/* Business List */}
             <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
                 {loading ? (
                     <View style={styles.loadingContainer}>
@@ -330,7 +318,6 @@ const OwnBussiness = ({ navigation }) => {
                 )}
             </Animated.View>
 
-            {/* Add Business Button */}
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
                     style={styles.addButton}

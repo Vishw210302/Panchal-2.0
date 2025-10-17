@@ -21,6 +21,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { getVillagesListing, getPerents, createFamilyMember } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import { useUser } from '../../context/UserContext';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const AddFamilyMember = ({ navigation }) => {
     const [formData, setFormData] = useState({
@@ -712,15 +713,7 @@ const AddFamilyMember = ({ navigation }) => {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardView}
             >
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={handleBack} activeOpacity={0.7} style={styles.backButton}>
-                        <MaterialIcons name="arrow-back-ios" color={COLORS.white} size={24} />
-                    </TouchableOpacity>
-                    <View style={styles.headerContent}>
-                        <Text style={styles.headerTitle}>Add New Family Member</Text>
-                        <Text style={styles.headerSubtitle}>Join us and get started</Text>
-                    </View>
-                </View>
+                <HeaderBack title="Add Family Member" subTitle="Join us and get started" navigation={navigation} />
 
                 <ScrollView
                     style={styles.scrollView}

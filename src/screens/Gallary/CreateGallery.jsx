@@ -20,6 +20,7 @@ import { createGallery } from '../../api/user_api';
 import { COLORS } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useUser } from '../../context/UserContext';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const { width } = Dimensions.get('window');
 const IMAGE_SIZE = (width - 64) / 3;
@@ -118,7 +119,7 @@ const CreateGallery = ({ navigation }) => {
             galleryData.append('title', title);
             galleryData.append('description', description);
             galleryData.append('category', category);
-            galleryData.append('createdBy', userData._id);
+            galleryData.append('createdBy', userData.firstname + " " + userData.lastname);
 
             // Append images - React Native specific format
             images.forEach((image, index) => {
@@ -132,7 +133,7 @@ const CreateGallery = ({ navigation }) => {
 
             console.log('Submitting gallery data...');
             await createGallery(galleryData);
-            
+
             setIsLoading(false);
             Alert.alert(
                 'Success!',
@@ -160,10 +161,10 @@ const CreateGallery = ({ navigation }) => {
                 onPress={() => setCategory(cat.id)}
                 activeOpacity={0.7}
             >
-                <Icon 
-                    name={cat.icon} 
-                    size={24} 
-                    color={isSelected ? COLORS.primary : '#666'} 
+                <Icon
+                    name={cat.icon}
+                    size={24}
+                    color={isSelected ? COLORS.primary : '#666'}
                 />
                 <Text style={[styles.categoryLabel, isSelected && styles.categoryLabelSelected]}>
                     {cat.label}
@@ -178,22 +179,13 @@ const CreateGallery = ({ navigation }) => {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
-            
-            {/* Header */}
-            <View style={styles.header}>
-                <TouchableOpacity
-                    onPress={() => navigation.goBack()}
-                    style={styles.backButton}
-                >
-                    <Icon name="arrow-back" size={24} color={COLORS.white} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Create Gallery</Text>
-                <View style={styles.placeholder} />
-            </View>
 
-            <Animated.View 
+            {/* Header */}
+            <HeaderBack title="Create Gallery" navigation={navigation} />
+
+            <Animated.View
                 style={[
-                    styles.content, 
+                    styles.content,
                     { opacity: fadeAnim, transform: [{ scale: scaleAnim }] }
                 ]}
             >
@@ -270,13 +262,13 @@ const CreateGallery = ({ navigation }) => {
                         {images.length > 0 && (
                             <View style={styles.imagesGrid}>
                                 {images.map((image, index) => (
-                                    <Animated.View 
-                                        key={index} 
+                                    <Animated.View
+                                        key={index}
                                         style={styles.imageWrapper}
                                     >
-                                        <Image 
-                                            source={{ uri: image.uri }} 
-                                            style={styles.gridImage} 
+                                        <Image
+                                            source={{ uri: image.uri }}
+                                            style={styles.gridImage}
                                         />
                                         <TouchableOpacity
                                             style={styles.removeImageButton}
@@ -395,7 +387,8 @@ const styles = StyleSheet.create({
     categoriesGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
-        gap: 12,
+        justifyContent: 'space-between',
+        rowGap: 16
     },
     categoryCard: {
         flexDirection: 'column',
@@ -407,8 +400,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingVertical: 16,
         paddingHorizontal: 12,
-        minWidth: (width - 88) / 3,
-        gap: 8,
+        minWidth: (width - 100) / 2,
+        gap: 0,
     },
     categoryCardSelected: {
         backgroundColor: '#e3f2fd',

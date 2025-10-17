@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NotificationService } from '../Services/NotificationService';
 import { FCMContext } from '../../services/FCMContext';
 import { COLORS } from '../../styles/colors';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const NotificationsScreen = ({ navigation }) => {
   const [notifications, setNotifications] = useState([]);
@@ -135,16 +136,7 @@ const NotificationsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <MaterialIcons name="arrow-back" size={24} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notifications</Text>
-        <View style={styles.placeholder} />
-      </View>
+      <HeaderBack title="Notifications" navigation={navigation} />
 
       {notifications.length === 0 ? (
         <View style={styles.emptyState}>

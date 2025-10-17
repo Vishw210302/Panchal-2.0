@@ -30,7 +30,7 @@ const NotificationModal = ({ visible, onClose }) => {
         },
         {
             id: 2,
-            title: "🎉 Community Event Reminder",
+            title: "Community Event Reminder",
             message: "Don't forget about our community gathering this weekend at the community center. Come join us for food, music, and celebration!",
             time: "1 day ago",
             read: false,
@@ -39,7 +39,7 @@ const NotificationModal = ({ visible, onClose }) => {
         },
         {
             id: 3,
-            title: "✅ Profile Updated Successfully",
+            title: "Profile Updated Successfully",
             message: "Your profile information has been updated successfully. All your changes are now live and visible to other community members.",
             time: "3 days ago",
             read: true,
@@ -48,7 +48,7 @@ const NotificationModal = ({ visible, onClose }) => {
         },
         {
             id: 4,
-            title: "👋 New Member Alert",
+            title: "New Member Alert",
             message: "Let's give a warm welcome to our new community member Ravi Patel! Help them feel at home in our community.",
             time: "5 days ago",
             read: true,
@@ -57,7 +57,7 @@ const NotificationModal = ({ visible, onClose }) => {
         },
         {
             id: 5,
-            title: "📢 Important Community Update",
+            title: "Important Community Update",
             message: "We have exciting news about upcoming festivities and celebrations. Check out the latest updates in the events section.",
             time: "1 week ago",
             read: false,

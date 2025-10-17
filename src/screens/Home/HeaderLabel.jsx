@@ -40,8 +40,8 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
       backgroundColor: COLORS.primary,
     },
     headerInner: {
-      height: Platform.OS === 'ios' ? 130 : 95,
-      paddingTop: Platform.OS === 'ios' ? 25 : 30,
+      height: Platform.OS === 'ios' ? 130 : 85,
+      paddingTop: Platform.OS === 'ios' ? 25 : 20,
       backgroundColor: COLORS.primary,
       paddingBottom: 0,
       shadowColor: '#000',
@@ -253,7 +253,7 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
         <View style={styles.headerContent}>
           <View style={styles.leftSection}>
             {/* <Text style={styles.titleText}>Panchal Samaj</Text> */}
-            <Text style={styles.titleText}>સવાસો ગોળ અમદાવાદ પંચાલ સમાજ</Text>
+            <Text style={styles.titleText}>{"સવાસો ગોળ અમદાવાદ પંચાલ સમાજ"}</Text>
           </View>
           {userData &&
             <View style={styles.rightSection}>

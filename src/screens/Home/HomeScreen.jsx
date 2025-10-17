@@ -16,7 +16,7 @@ const HomeScreen = ({navigation}) => {
             try {
                 const onboardingCompleted = await AsyncStorage.getItem('Onboarding');
                 if (!onboardingCompleted) {
-                    navigation.replace('Onboarding'); // 🔁 replace avoids back navigation
+                    navigation.replace('Onboarding'); // replace avoids back navigation
                     return;
                 }
             } catch (error) {

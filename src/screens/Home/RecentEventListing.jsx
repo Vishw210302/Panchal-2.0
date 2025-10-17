@@ -12,6 +12,7 @@ import {
 import { getEvents } from '../../api/user_api';
 import ENV from '../../config/env';
 import { COLORS } from '../../styles/colors';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width - 30;
@@ -122,7 +123,7 @@ const RecentEventListing = ({ navigation }) => {
 
                                 {event.location && (
                                     <View style={styles.locationContainer}>
-                                        <Text style={styles.locationIcon}>📍</Text>
+                                        <Text style={styles.locationIcon}>{"\uD83D\uDCCD"}</Text>
                                         <Text style={styles.locationText} numberOfLines={1}>
                                             {event.location}
                                         </Text>
@@ -130,7 +131,7 @@ const RecentEventListing = ({ navigation }) => {
                                 )}
 
                                 <View style={styles.footer}>
-                                    <Text style={styles.learnMore}>Learn More →</Text>
+                                    <View style={styles.learnMore}><Text style={styles.learnMoreText}>Learn More</Text> <MaterialIcons name={"arrow-forward-ios"} color="#FFFFFF" size={14} /></View>
                                 </View>
                             </View>
                         </View>
@@ -257,9 +258,15 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     learnMore: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 2
+    },
+    learnMoreText: {
         fontSize: 14,
         fontWeight: '600',
         color: '#FFFFFF',
+        paddingBottom: 4
     },
     pagination: {
         flexDirection: 'row',

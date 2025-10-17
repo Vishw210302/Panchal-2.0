@@ -22,6 +22,7 @@ import { getVillagesListing, getPerents, updateMember, editMember } from '../../
 // import { FCMContext } from '../../services/FCMContext';
 import { COLORS } from '../../styles/colors';
 import { useUser } from '../../context/UserContext';
+import HeaderBack from '../../components/common/HeaderBack';
 
 const EditFamilyMember = ({ route }) => {
     const { memberId } = route.params || {}; // Get member ID from route params
@@ -808,15 +809,7 @@ const EditFamilyMember = ({ route }) => {
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 style={styles.keyboardView}
             >
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={handleBack} activeOpacity={0.7} style={styles.backButton}>
-                        <MaterialIcons name="arrow-back-ios" color={COLORS.white} size={24} />
-                    </TouchableOpacity>
-                    <View style={styles.headerContent}>
-                        <Text style={styles.headerTitle}>Edit Family Member</Text>
-                        <Text style={styles.headerSubtitle}>Update member information</Text>
-                    </View>
-                </View>
+                <HeaderBack title="Edit Family Member" subTitle="Update member information" icon="edit" navigation={navigation} />
 
                 <ScrollView
                     style={styles.scrollView}
