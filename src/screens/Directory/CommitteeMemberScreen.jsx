@@ -38,15 +38,7 @@ const CommitteeMemberScreen = ({ navigation }) => {
     };
 
     const getRoleColor = (role) => {
-        const roleColors = {
-            'President': '#FF6B35',
-            'Vice President': '#F7931E',
-            'Minister': '#f06269ff',
-            'Co-Minister': '#4a8fe9ff',
-            'Treasurer': '#4ECDC4',
-            'Executive Member': '#45B7D1'
-        };
-        return roleColors[role] || COLORS.primary;
+        return COLORS.primary;
     };
 
     const getRoleIcon = (role) => {

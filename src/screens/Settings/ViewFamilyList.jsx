@@ -30,10 +30,10 @@ const ViewFamilyList = ({navigation}) => {
     const fetchFamilyData = async () => {
         try {
             setLoading(true);
-            console.log(typeof userData,"TYPEOFUSERDATA")
             if (userData) {
                 console.log(userData._id,"ID of USERDATA")
                 const res = await familyList(userData._id);
+                console.log(res,"TYPEOFUSERDATA")
 
                 if (res && res.family) {
                     // Transform the family data to match our display format

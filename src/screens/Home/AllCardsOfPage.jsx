@@ -58,10 +58,26 @@ const AllCardsOfPage = () => {
     },
   ]);
 
-  useEffect(() => {
-    if (!userData) {
-      let isLogin = cardData.find(item => item.id == 6)
-      if (!isLogin) setCardData(prevCards => [
+useEffect(() => {
+  if (userData) {
+    let hasGallery = cardData.find(item => item.id == 7);
+    if (!hasGallery) {
+      setCardData(prevCards => [
+        ...prevCards,
+        {
+          id: 7,
+          title: 'Gallery',
+          iconName: 'image',
+          color: '#4CAF50',
+          route: 'GallaryScreen',
+        },
+      ]);
+    }
+    setCardData(prevCards => prevCards.filter(item => item.id !== 6));
+  } else {
+    let hasLogin = cardData.find(item => item.id == 6);
+    if (!hasLogin) {
+      setCardData(prevCards => [
         ...prevCards,
         {
           id: 6,
@@ -72,7 +88,10 @@ const AllCardsOfPage = () => {
         },
       ]);
     }
-  }, []);
+    setCardData(prevCards => prevCards.filter(item => item.id !== 7));
+  }
+}, [userData]);
+
 
   const handleCardPress = item => {
     navigation.navigate(item.route);

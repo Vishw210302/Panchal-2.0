@@ -181,6 +181,12 @@ const SettingsScreen = () => {
                     subtitle="Upgrade to Premium"
                     onPress={() => navigation.navigate('MembershipScreen')}
                 />
+                <SettingsItem
+                    icon="card-outline"
+                    title="Create Gallery"
+                    subtitle="Add photos to gallery"
+                    onPress={() => navigation.navigate('CreateGallery')}
+                />
             </SettingsSection>
 
             <SettingsSection title="Notifications">
@@ -307,7 +313,7 @@ const SettingsScreen = () => {
                     icon="people-outline"
                     title="Family Tree"
                     subtitle="View and manage family connections"
-                    onPress={() => Alert.alert('Family Tree', 'Navigate to family tree')}
+                    onPress={() => navigation.navigate('FamilyTree')}
                 />
                 <SettingsItem
                     icon="calendar-outline"

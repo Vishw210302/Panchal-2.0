@@ -24,6 +24,7 @@ export const updateMember = (id, payload) => axiosClient.put(`/updateMember/${id
 export const deleteMember = (id) => axiosClient.delete(`/deleteMember/${id}`);
 export const familyList = (id) => axiosClient.get(`/familyList/${id}`);
 export const createBusiness = (payload) => axiosClient.post('/createBusiness', payload, { headers: { 'Content-Type': 'multipart/form-data' } });
+export const createGallery = (payload) => axiosClient.post('/createGallery', payload, { headers: { 'Content-Type': 'multipart/form-data' } });
 export const getSubscriptions = () => axiosClient.get('/subscriptions');
 export const getBussinessListing = (id) => axiosClient.get(`/ownBussiness/${id}`);
 export const getTermsAndCondition = () => axiosClient.get('/terms');

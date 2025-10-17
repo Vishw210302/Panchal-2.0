@@ -33,7 +33,6 @@ const MemberDetailsScreen = ({ route, navigation }) => {
     try {
       setIsLoading(true);
       const response = await getMemberDetails(userId);
-
       if (response && response.success) {
         setMemberData(response.data);
       } else {

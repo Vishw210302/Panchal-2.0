@@ -4,9 +4,9 @@ const BASE_URL = ENV.API_BASE_URL;
 
 const axiosClient = axios.create({
     baseURL: BASE_URL,
-    timeout: 15000,
+    timeout: 60000,
     headers: {
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json',
         'x-app-secret': 'PanchalSamaj2025',
     },
 });
