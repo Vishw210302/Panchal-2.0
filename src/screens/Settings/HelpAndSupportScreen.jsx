@@ -5,6 +5,7 @@ import {
     Animated,
     Linking,
     Platform,
+    StatusBar,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -14,6 +15,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../styles/colors';
 import FAQsPageListing from './FAQsPageListing';
 import { getSettings } from '../../api/user_api';
+import HeaderBack from '../../components/common/HeaderBack';
+
 
 const HelpAndSupportScreen = () => {
     const navigation = useNavigation();
@@ -92,7 +95,7 @@ const HelpAndSupportScreen = () => {
 
     const headerBackgroundColor = scrollY.interpolate({
         inputRange: [0, 100],
-        outputRange: [COLORS.primary, `${COLORS.primary}CC`],
+        outputRange: [COLORS.primary, `${COLORS.primary}`],
         extrapolate: 'clamp',
     });
 
@@ -158,21 +161,8 @@ const HelpAndSupportScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Animated.View style={[
-                styles.header,
-                {
-                    backgroundColor: headerBackgroundColor,
-                }
-            ]}>
-                <View style={styles.headerContent}>
-                    <TouchableOpacity onPress={handleBack} style={styles.backButton} activeOpacity={0.7}>
-                        <MaterialIcons name="arrow-back-ios" color="#fff" size={22} />
-                    </TouchableOpacity>
-                    <View style={styles.headerTitleContainer}>
-                        <Text style={styles.headerTitle}>Help & Support</Text>
-                    </View>
-                </View>
-            </Animated.View>
+            <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+            <HeaderBack title="Help & Support" navigation={navigation} />
 
             <Animated.ScrollView
                 contentContainerStyle={styles.scrollContainer}
@@ -198,6 +188,7 @@ const HelpAndSupportScreen = () => {
 
                 <FAQsPageListing />
             </Animated.ScrollView>
+
         </View>
     );
 };

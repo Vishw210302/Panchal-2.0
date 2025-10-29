@@ -25,7 +25,7 @@ const AllCardsOfPage = () => {
       id: 1,
       title: 'About Us',
       iconName: 'info',
-      color: COLORS.primary,
+      color: COLORS.warning,
       route: 'AboutUs',
     },
     {
@@ -124,7 +124,7 @@ useEffect(() => {
           <View
             style={[
               styles.cornerDecoration,
-              { backgroundColor: item.color + '25' },
+              { backgroundColor: item.color + '55' },
             ]}
           />
         </View>

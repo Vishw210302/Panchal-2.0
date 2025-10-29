@@ -46,10 +46,15 @@ const UserDetailsScreen = ({ route, navigation }) => {
     };
 
     const handlePhoneCall = () => {
+
         const phoneNumber = userData?.mobile_number?.toString();
         if (phoneNumber) {
             Linking.openURL(`tel:${phoneNumber}`);
         }
+    };
+    const handleViewFamily = (parentId) => {
+        console.log("callllll")
+        navigation.navigate('FamilyMember', { parentId: parentId });
     };
 
     const handleEmail = () => {
@@ -129,17 +134,17 @@ const UserDetailsScreen = ({ route, navigation }) => {
                         <Text style={styles.personalId}>ID: {userData.personal_id || 'N/A'}</Text>
 
                         <View style={styles.actionButtons}>
-                            {userData.mobile_number && (
+                            {userData._id && (
                                 <TouchableOpacity
                                     style={styles.actionButton}
-                                    onPress={handlePhoneCall}
+                                    onPress={()=>handleViewFamily(userData._id)}
                                     activeOpacity={0.8}
                                 >
-                                    <MaterialIcons name="phone" size={20} color={COLORS.white} />
-                                    <Text style={styles.actionButtonText}>Call</Text>
+                                    <MaterialIcons name="family-restroom" size={20} color={COLORS.white} />
+                                    <Text style={styles.actionButtonText}>View Family Details</Text>
                                 </TouchableOpacity>
                             )}
-                            {userData.email && (
+                            {/* {userData.email && (
                                 <TouchableOpacity
                                     style={styles.actionButton}
                                     onPress={handleEmail}
@@ -148,7 +153,7 @@ const UserDetailsScreen = ({ route, navigation }) => {
                                     <MaterialIcons name="email" size={20} color={COLORS.white} />
                                     <Text style={styles.actionButtonText}>Email</Text>
                                 </TouchableOpacity>
-                            )}
+                            )} */}
                         </View>
                     </View>
                 </View>
@@ -240,7 +245,7 @@ const UserDetailsScreen = ({ route, navigation }) => {
                 </Section>
 
                 <Section title="Additional Information">
-                    <DetailRow
+                    {/* <DetailRow
                         icon="payment"
                         label="Payment ID"
                         value={userData.payment_id}
@@ -249,7 +254,7 @@ const UserDetailsScreen = ({ route, navigation }) => {
                         icon="family-restroom"
                         label="Relationship"
                         value={userData.relationship}
-                    />
+                    /> */}
                     <DetailRow
                         icon="date-range"
                         label="Member Since"

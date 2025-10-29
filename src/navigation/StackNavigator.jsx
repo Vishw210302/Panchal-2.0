@@ -31,9 +31,11 @@ import AddEvent from '../screens/Events/AddEvent';
 import MyEvents from '../screens/Events/MyEvents';
 import MembershipScreen from '../screens/Membership/MembershipScreen';
 import MemberDetailsScreen from '../screens/Settings/FamilyDetails';
+import MemberDetails from '../screens/Settings/MemberDetails';
 import GallaryScreen from '../screens/Gallary/GalleryScreen';
 import CreateGallery from '../screens/Gallary/CreateGallery';
 import FamilyTree from '../screens/Settings/FamilyTree';
+import FamilyMember from '../screens/Settings/FamilyMember';
 
 const Stack = createNativeStackNavigator();
 const StackNavigator = () => {
@@ -209,6 +211,16 @@ const StackNavigator = () => {
         name="FamilyTree"
         component={FamilyTree}
         options={{ headerShown: false, title: 'FamilyTree' }}
+      />
+      <Stack.Screen
+        name="FamilyMember"
+        component={FamilyMember}
+        options={{ headerShown: false, title: 'FamilyMember' }}
+      />
+      <Stack.Screen
+        name="MemberDetails"
+        component={MemberDetails}
+        options={{ headerShown: false, title: 'MemberDetails' }}
       />
     </Stack.Navigator>
   );

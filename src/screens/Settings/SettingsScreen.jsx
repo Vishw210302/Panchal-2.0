@@ -9,7 +9,8 @@ import {
     Switch,
     Text,
     TouchableOpacity,
-    View
+    View,
+    Linking
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -57,7 +58,7 @@ const SettingsScreen = () => {
     const handleShareApp = async () => {
         try {
             await Share.share({
-                message: 'Join our Panchal Samaj community! Download the app: https://play.google.com/store/apps/panchal-samaj',
+                message: 'Join our Panchal Samaj community! Download the app: https://play.google.com/store/apps/details?id=com.savasonogol.panchalsamaj',
                 title: 'Panchal Samaj App',
             });
         } catch (error) {
@@ -65,9 +66,20 @@ const SettingsScreen = () => {
         }
     };
 
-    const handleRateApp = () => {
-        Alert.alert('Rate App', 'Thank you for rating our app!');
+    const handleRateApp = async () => {
+        const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.savasonogol.panchalsamaj';
+        try {
+            const supported = await Linking.canOpenURL(playStoreUrl);
+            if (supported) {
+                await Linking.openURL(playStoreUrl);
+            } else {
+                Alert.alert('Error', 'Cannot open Play Store link.');
+            }
+        } catch (err) {
+            Alert.alert('Error', 'Something went wrong. Please try again later.');
+        }
     };
+
 
     const handleLogout = () => {
         Alert.alert(
@@ -176,6 +188,12 @@ const SettingsScreen = () => {
                     onPress={handlePrivacyPress}
                 />
                 <SettingsItem
+                    icon="people-outline"
+                    title="Family Tree"
+                    subtitle="View and manage family connections"
+                    onPress={() => navigation.navigate('FamilyTree')}
+                />
+                <SettingsItem
                     icon="card-outline"
                     title="Membership"
                     subtitle="Upgrade to Premium"
@@ -228,7 +246,7 @@ const SettingsScreen = () => {
                 />
             </SettingsSection>
 
-            <SettingsSection title="Preferences">
+            {/* <SettingsSection title="Preferences">
                 <SettingsItem
                     icon="moon-outline"
                     title="Dark Mode"
@@ -271,10 +289,10 @@ const SettingsScreen = () => {
                     }
                     showArrow={false}
                 />
-            </SettingsSection>
+            </SettingsSection> */}
 
             <SettingsSection title="Security">
-                <SettingsItem
+                {/* <SettingsItem
                     icon="finger-print"
                     iconFamily="MaterialIcons"
                     title="Biometric Authentication"
@@ -299,7 +317,7 @@ const SettingsScreen = () => {
                         />
                     }
                     showArrow={false}
-                />
+                /> */}
                 <SettingsItem
                     icon="lock-outline"
                     title="Change Password"
@@ -309,12 +327,7 @@ const SettingsScreen = () => {
             </SettingsSection>
 
             <SettingsSection title="Community">
-                <SettingsItem
-                    icon="people-outline"
-                    title="Family Tree"
-                    subtitle="View and manage family connections"
-                    onPress={() => navigation.navigate('FamilyTree')}
-                />
+                
                 <SettingsItem
                     icon="calendar-outline"
                     title="My Events"

@@ -10,6 +10,8 @@ import {
     ActivityIndicator,
     Alert,
     Dimensions,
+    Linking,
+    Share,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -18,10 +20,9 @@ import { COLORS } from '../../styles/colors';
 import ENV from '../../config/env';
 import HeaderBack from '../../components/common/HeaderBack';
 
-
 const { width } = Dimensions.get('window');
 
-const MemberDetailsScreen = ({ route, navigation }) => {
+const MemberDetails = ({ route, navigation }) => {
     const { userId } = route.params;
     const [memberData, setMemberData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -77,6 +78,46 @@ const MemberDetailsScreen = ({ route, navigation }) => {
         return status?.toLowerCase() === 'married' ? 'favorite' : 'person-outline';
     };
 
+    const handleCall = () => {
+        if (memberData?.mobile_number) {
+            Linking.openURL(`tel:${memberData.mobile_number}`);
+        } else {
+            Alert.alert('No Contact', 'Mobile number not available');
+        }
+    };
+
+    const handleEmail = () => {
+        if (memberData?.email) {
+            Linking.openURL(`mailto:${memberData.email}`);
+        } else {
+            Alert.alert('No Email', 'Email address not available');
+        }
+    };
+
+    const handleShare = async () => {
+        try {
+            const memberName = `${memberData.firstname || ''} ${memberData.middlename || ''} ${memberData.lastname || ''}`.trim();
+            const message = `Check out ${memberName}'s profile\nID: ${memberData._id?.slice(-8).toUpperCase()}\nContact: ${memberData.mobile_number || 'N/A'}`;
+            
+            await Share.share({
+                message: message,
+                title: 'Share Member Profile',
+            });
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
+    };
+
+    const handleViewMap = () => {
+        if (memberData?.address && memberData?.city) {
+            const address = encodeURIComponent(`${memberData.address}, ${memberData.city}, ${memberData.state || ''}`);
+            const url = `https://www.google.com/maps/search/?api=1&query=${address}`;
+            Linking.openURL(url);
+        } else {
+            Alert.alert('Location', 'Address information not available');
+        }
+    };
+
     if (isLoading) {
         return (
             <View style={styles.loaderContainer}>
@@ -105,13 +146,12 @@ const MemberDetailsScreen = ({ route, navigation }) => {
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
 
-            <HeaderBack navigation={navigation} title="Family Details" />
+            <HeaderBack navigation={navigation} title="Member Details" />
 
             <ScrollView
                 style={styles.scrollView}
                 showsVerticalScrollIndicator={false}
             >
-
                 {/* Profile Banner */}
                 <View style={styles.bannerContainer}>
                     <Image
@@ -119,10 +159,15 @@ const MemberDetailsScreen = ({ route, navigation }) => {
                         style={styles.bannerImage}
                         defaultSource={require('../../../assets/images/default-banner.png')}
                     />
-                    {/* <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.7)']}
-            style={styles.bannerGradient}
-          /> */}
+                    <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.5)']}
+                        style={styles.bannerGradient}
+                    />
+                    
+                    {/* Share Button on Banner */}
+                    <TouchableOpacity style={styles.shareButtonBanner} onPress={handleShare}>
+                        <Icon name="share" size={20} color={COLORS.white} />
+                    </TouchableOpacity>
                 </View>
 
                 {/* Profile Section */}
@@ -147,6 +192,30 @@ const MemberDetailsScreen = ({ route, navigation }) => {
                     <View style={styles.memberIdContainer}>
                         <Icon name="badge" size={16} color={COLORS.gray} />
                         <Text style={styles.memberId}>ID: {memberData._id?.slice(-8).toUpperCase()}</Text>
+                    </View>
+
+                    {/* Quick Contact Actions */}
+                    <View style={styles.quickContactContainer}>
+                        <TouchableOpacity style={styles.quickContactBtn} onPress={handleCall}>
+                            <View style={styles.quickContactIcon}>
+                                <Icon name="phone" size={20} color={COLORS.primary} />
+                            </View>
+                            <Text style={styles.quickContactText}>Call</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.quickContactBtn} onPress={handleEmail}>
+                            <View style={styles.quickContactIcon}>
+                                <Icon name="email" size={20} color={COLORS.primary} />
+                            </View>
+                            <Text style={styles.quickContactText}>Email</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.quickContactBtn} onPress={handleViewMap}>
+                            <View style={styles.quickContactIcon}>
+                                <Icon name="location-on" size={20} color={COLORS.primary} />
+                            </View>
+                            <Text style={styles.quickContactText}>Map</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
 
@@ -249,18 +318,18 @@ const MemberDetailsScreen = ({ route, navigation }) => {
             <View style={styles.actionBar}>
                 <TouchableOpacity
                     style={styles.actionButton}
-                    onPress={() => navigation.navigate('EditFamilyMember', { memberId: memberData._id })}
+                    onPress={handleCall}
                 >
-                    <Icon name="edit" size={20} color={COLORS.white} />
-                    <Text style={styles.actionButtonText}>Edit Profile</Text>
+                    <Icon name="phone" size={20} color={COLORS.white} />
+                    <Text style={styles.actionButtonText}>Call Now</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={[styles.actionButton, styles.actionButtonSecondary]}
-                    onPress={() => Alert.alert('Contact', 'Contact functionality')}
+                    onPress={handleShare}
                 >
-                    <Icon name="message" size={20} color={COLORS.primary} />
-                    <Text style={[styles.actionButtonText, styles.actionButtonSecondaryText]}>Contact</Text>
+                    <Icon name="share" size={20} color={COLORS.primary} />
+                    <Text style={[styles.actionButtonText, styles.actionButtonSecondaryText]}>Share</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -319,31 +388,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
     },
-    header: {
-        backgroundColor: COLORS.primary,
-        paddingTop: StatusBar.currentHeight || 40,
-        paddingBottom: 16,
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    backButton: {
-        padding: 8,
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: COLORS.white,
-    },
-    moreButton: {
-        padding: 8,
-    },
     scrollView: {
         flex: 1,
     },
@@ -363,6 +407,17 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         height: 100,
+    },
+    shareButtonBanner: {
+        position: 'absolute',
+        top: 16,
+        right: 16,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     profileSection: {
         alignItems: 'center',
@@ -407,11 +462,36 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
+        marginBottom: 16,
     },
     memberId: {
         fontSize: 14,
         color: COLORS.gray,
         marginLeft: 6,
+        fontWeight: '600',
+    },
+    quickContactContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: 20,
+        marginTop: 8,
+    },
+    quickContactBtn: {
+        alignItems: 'center',
+        paddingHorizontal: 12,
+    },
+    quickContactIcon: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        backgroundColor: `${COLORS.primary}15`,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 6,
+    },
+    quickContactText: {
+        fontSize: 12,
+        color: '#6b7280',
         fontWeight: '600',
     },
     quickInfoContainer: {
@@ -550,4 +630,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default MemberDetailsScreen;
+export default MemberDetails;

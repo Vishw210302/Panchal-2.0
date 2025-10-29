@@ -6,36 +6,43 @@ import {
   StatusBar,
   TouchableOpacity,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
+import { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import LinearGradient from 'react-native-linear-gradient';
 import { COLORS } from '../../styles/colors';
 import HeaderBack from '../../components/common/HeaderBack';
+import { membershipData as fetchMembershipData } from '../../api/user_api';
+import { useUser } from '../../context/UserContext';
 
 const { width } = Dimensions.get('window');
 
 const MembershipScreen = ({ navigation }) => {
-  // Static membership data
-  const membershipData = {
-    packageName: 'Premium Gold',
-    status: 'Active',
-    startDate: '01 Jan 2025',
-    expiryDate: '31 Dec 2025',
-    daysRemaining: 77,
-    memberSince: '15 Mar 2023',
-    memberId: 'MEM2023001245',
-    benefits: [
-      { icon: 'check-circle', text: 'Unlimited Access' },
-      { icon: 'stars', text: 'Priority Support' },
-      { icon: 'people', text: 'Exclusive Events' },
-      { icon: 'local-offer', text: 'Special Discounts' },
-      { icon: 'card-giftcard', text: 'Member Rewards' },
-      { icon: 'verified', text: 'Verified Badge' },
-    ],
+  const {userData} = useUser();
+  const [membershipData, setMembershipData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getMembershipData();
+  }, []);
+
+  const getMembershipData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetchMembershipData(userData._id);
+      console.log(response.membershipData,"responseresponse")
+      setMembershipData(response.membershipData || response);
+    } catch (error) {
+      console.error('Error fetching membership data:', error);
+      alert('Failed to load membership details');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'active':
         return COLORS.success || '#10b981';
       case 'expiring':
@@ -43,19 +50,48 @@ const MembershipScreen = ({ navigation }) => {
       case 'expired':
         return COLORS.error || '#ef4444';
       default:
-        return COLORS.gray;
+        return COLORS.gray || '#6b7280';
     }
   };
 
   const handleRenewMembership = () => {
     // Navigate to renewal screen or payment
-    console.log('Renew membership');
+    navigation.navigate('RenewMembership', { membershipData });
   };
 
   const handleUpgradeMembership = () => {
     // Navigate to upgrade screen
-    console.log('Upgrade membership');
+    navigation.navigate('UpgradePlan', { membershipData });
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+        <HeaderBack title="My Membership" navigation={navigation} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingText}>Loading membership details...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  if (!membershipData) {
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+        <HeaderBack title="My Membership" navigation={navigation} />
+        <View style={styles.emptyContainer}>
+          <Icon name="card-membership" size={80} color={COLORS.gray} />
+          <Text style={styles.emptyText}>No membership found</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={getMembershipData}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -157,20 +193,22 @@ const MembershipScreen = ({ navigation }) => {
         </View>
 
         {/* Benefits Section */}
-        <View style={styles.benefitsContainer}>
-          <Text style={styles.sectionTitle}>Membership Benefits</Text>
-          
-          <View style={styles.benefitsGrid}>
-            {membershipData.benefits.map((benefit, index) => (
-              <View key={index} style={styles.benefitCard}>
-                <View style={styles.benefitIconContainer}>
-                  <Icon name={benefit.icon} size={24} color={COLORS.primary} />
+        {membershipData.benefits && membershipData.benefits.length > 0 && (
+          <View style={styles.benefitsContainer}>
+            <Text style={styles.sectionTitle}>Membership Benefits</Text>
+            
+            <View style={styles.benefitsGrid}>
+              {membershipData.benefits.map((benefit, index) => (
+                <View key={index} style={styles.benefitCard}>
+                  <View style={styles.benefitIconContainer}>
+                    <Icon name={benefit.icon} size={24} color={COLORS.primary} />
+                  </View>
+                  <Text style={styles.benefitText}>{benefit.text}</Text>
                 </View>
-                <Text style={styles.benefitText}>{benefit.text}</Text>
-              </View>
-            ))}
+              ))}
+            </View>
           </View>
-        </View>
+        )}
 
         {/* Action Buttons */}
         <View style={styles.actionContainer}>
@@ -204,33 +242,42 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  header: {
-    backgroundColor: COLORS.primary,
-    paddingTop: StatusBar.currentHeight || 40,
-    paddingBottom: 20,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  backButton: {
-    padding: 8,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: COLORS.white,
-  },
-  placeholder: {
-    width: 40,
-  },
   scrollView: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#6b7280',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#6b7280',
+    marginTop: 16,
+    marginBottom: 24,
+  },
+  retryButton: {
+    backgroundColor: COLORS.primary,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: COLORS.white,
+    fontSize: 16,
+    fontWeight: '600',
   },
   cardContainer: {
     paddingHorizontal: 20,

@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import NotificationModal from './NotificationModal';
 import ENV from '../../config/env';
 import { COLORS } from '../../styles/colors';
 
@@ -17,11 +16,12 @@ const { height } = Dimensions.get('window');
 
 const HeaderLabel = ({ userData, setUserData, navigation }) => {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
-  const [notificationModalVisible, setNotificationModalVisible] =
-    useState(false);
+
   const handleProfilePress = () => setProfileModalVisible(true);
-  const handleNotificationPress = () => setNotificationModalVisible(true);
-  const closeNotificationModal = () => setNotificationModalVisible(false);
+  
+  const handleNotificationPress = () => {
+    navigation.navigate('NotificationsScreen');
+  };
 
   const closeProfileModal = () => {
     setProfileModalVisible(false);
@@ -33,7 +33,7 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
     setProfileModalVisible(false);
   };
 
-  const notificationCount = 3;
+  const notificationCount = 0;
 
   const styles = {
     headerContainer: {
@@ -252,10 +252,9 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
       <View style={styles.headerInner}>
         <View style={styles.headerContent}>
           <View style={styles.leftSection}>
-            {/* <Text style={styles.titleText}>Panchal Samaj</Text> */}
             <Text style={styles.titleText}>{"સવાસો ગોળ અમદાવાદ પંચાલ સમાજ"}</Text>
           </View>
-          {userData &&
+          {userData && (
             <View style={styles.rightSection}>
               <TouchableOpacity
                 onPress={handleNotificationPress}
@@ -279,27 +278,26 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
                 </View>
               </TouchableOpacity>
 
-              {userData && (
-                <TouchableOpacity
-                  onPress={handleProfilePress}
-                  activeOpacity={0.7}
-                  style={styles.profileButton}
-                >
-                  <Image
-                    source={{
-                      uri:
-                        userData && userData?.photo
-                          ? ENV.IMAGE_URL + userData.photo
-                          : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
-                    }}
-                    style={styles.profileImage}
-                    defaultSource={{
-                      uri: 'https://via.placeholder.com/44x44/cccccc/ffffff?text=U',
-                    }}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>}
+              <TouchableOpacity
+                onPress={handleProfilePress}
+                activeOpacity={0.7}
+                style={styles.profileButton}
+              >
+                <Image
+                  source={{
+                    uri:
+                      userData && userData?.photo
+                        ? ENV.IMAGE_URL + userData.photo
+                        : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80',
+                  }}
+                  style={styles.profileImage}
+                  defaultSource={{
+                    uri: 'https://via.placeholder.com/44x44/cccccc/ffffff?text=U',
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
 
@@ -389,11 +387,6 @@ const HeaderLabel = ({ userData, setUserData, navigation }) => {
           </View>
         </View>
       </Modal>
-
-      <NotificationModal
-        visible={notificationModalVisible}
-        onClose={closeNotificationModal}
-      />
     </View>
   );
 };

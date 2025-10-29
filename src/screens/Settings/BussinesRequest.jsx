@@ -22,6 +22,7 @@ import { postOrderCreate, verifyPayment, createBusiness, getSubscriptions } from
 import { COLORS } from '../../styles/colors';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useUser } from '../../context/UserContext';
+import HeaderBack from '../../components/common/HeaderBack';
 
 
 const BussinesRequest = ({ navigation }) => {
@@ -154,10 +155,11 @@ const BussinesRequest = ({ navigation }) => {
                 payment_id: paymentData.razorpay_payment_id,
                 signature: paymentData.razorpay_signature,
                 registration_data: {
-                    first_name: user.member.firstname,
-                    last_name: user.member.lastname,
-                    email: user.member.email
+                    first_name: user.firstname,
+                    last_name: user.lastname,
+                    email: user.email
                 },
+
                 forReason: 'subscription',
             };
             console.log(verificationPayload)
@@ -323,17 +325,8 @@ const BussinesRequest = ({ navigation }) => {
         >
             <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
             <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-
-                <View style={styles.header}>
-                    <TouchableOpacity
-                        onPress={() => navigation.goBack()}
-                        style={styles.backButton}
-                    >
-                        <Icon name="arrow-back" size={24} color={COLORS.white} />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Add New Business</Text>
-                    <View style={styles.placeholder} />
-                </View>
+                <HeaderBack navigation={navigation} title='Add New Business' />
+                
 
                 <ScrollView
                     style={styles.content}
@@ -522,34 +515,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
     },
-    header: {
-        backgroundColor: COLORS.primary,
-        paddingTop: StatusBar.currentHeight || 40,
-        paddingBottom: 20,
-        paddingHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        elevation: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    backButton: {
-        padding: 8,
-    },
-    headerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: COLORS.white,
-    },
-    placeholder: {
-        width: 40,
-    },
-    content: {
-        flex: 1,
-    },
+    
     scrollContent: {
         padding: 16,
     },

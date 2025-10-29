@@ -35,4 +35,5 @@ export const createEvent = (payload) => axiosClient.post('/createEvent', payload
 export const getMyEvents = (id) => axiosClient.get(`/events`);
 export const getMemberDetails = (id) => axiosClient.get(`/memberDetails/${id}`);
 export const getSingleBusines = (id) => axiosClient.get(`/editBusiness/${id}`);
-export const getGallaryImages = (id) => axiosClient.get(`/media`);
+export const getGallaryImages = (id) => axiosClient.get(`/gallery_images`);
+export const membershipData = (id) => axiosClient.get(`/membership/${id}`);
